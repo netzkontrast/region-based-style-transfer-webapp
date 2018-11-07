@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Region-based Style Transfer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+
+    <script src="../static/upload.js"></script>
+</head>
+<body>
+
+    <form id="upload_form" enctype="multipart/form-data" method="post">
+        <input type="file">
+        <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+        <h3 id="status"></h3>
+        <p id="loaded_n_total"></p>
+        <button name="submitFileBtn" id="submitFileBtn" onchange="uploadFile()"><br>
+    </form>
+</body>
+</html>
