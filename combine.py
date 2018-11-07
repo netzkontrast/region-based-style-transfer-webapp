@@ -10,6 +10,8 @@ import numpy as np
 import tensorflow as tf
 import yaml
 import cv2
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import gridspec
 from matplotlib import pyplot as plt
 from helper import FPS2, WebcamVideoStream
