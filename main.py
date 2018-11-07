@@ -22,7 +22,12 @@ def allowed_file(filename):
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return  '''
+    <!doctype html>
+    <title>COMS4731 Region-based Style Transfer</title>
+    <h1>Hello</h1>
+    It works!
+    '''
 
 
 @app.route('/ping', methods=['GET'])
