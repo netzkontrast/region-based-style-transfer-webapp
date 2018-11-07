@@ -3,23 +3,48 @@ from flask import Flask, jsonify, request, redirect, url_for, flash, send_from_d
 from flask import render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-
-UPLOAD_FOLDER = './uploads/'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+from combine import load_frozenmodel, segmentation_image, blend_images, style_transfer
+import numpy as np
+import cv2
 
 app = Flask(__name__)
 app.debug = True
 app.secret_key = "super secret key"
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = './uploads/'
+app.config['OUTPUT_FOLDER'] = './uploads/'
 
 CORS(app)
+
+LABEL_NAMES = np.asarray([
+    'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
+    'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike',
+    'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tv'
+])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
+def region_based_style_transfer(image_name, image_suffix, style):
+    fg_img_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name+'.'+image_suffix)
+    bg_img_path = os.path.join(app.config['OUTPUT_FOLDER'], image_name+'_'+style+'.'+image_suffix)
+
+    blend_img_name = 'blend_'+image_name+'_'+style+'.'+image_suffix
+    blend_img_path = os.path.join(app.config['OUTPUT_FOLDER'], blend_img_name)
+
+    graph = load_frozenmodel()
+    bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path)
+
+    style_transfer("./models/%s.ckpt"%(style), fg_img_path, bg_img_path)
+    
+    blend_img = blend_images(fg_path=fg_img_path, bg_path=bg_img_path, mask=bin_mask)
+
+    cv2.imwrite(blend_img_path, blend_img)
+
+    return blend_img_name
+
 @app.route('/index')
 def index():
     return  '''
@@ -33,7 +58,7 @@ def index():
 def ping_pong():
     return jsonify('pong!')
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -49,10 +74,13 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            count = 0
-                
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
+
+            img_path = filename.rsplit('.', 1)[0]
+            img_suffix = filename.rsplit('.', 1)[1].lower()
+            style = 'wreck'
+            blend_img_path = region_based_style_transfer(img_path, img_suffix, style)
+
+            return redirect(url_for('uploaded_file', filename=blend_img_path))
     return '''
     <!doctype html>
     <title>Upload new File</title>
@@ -63,7 +91,7 @@ def upload_file():
     </form>
     '''
 
-@app.route('/upload/<filename>', methods=['GET'])
+@app.route('/uploads/<filename>', methods=["GET"])
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
