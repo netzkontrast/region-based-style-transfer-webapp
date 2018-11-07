@@ -78,6 +78,7 @@ def upload_file():
             img_path = filename.rsplit('.', 1)[0]
             img_suffix = filename.rsplit('.', 1)[1].lower()
             style = 'wreck'
+            
             blend_img_path = region_based_style_transfer(img_path, img_suffix, style)
 
             return redirect(url_for('uploaded_file', filename=blend_img_path))
