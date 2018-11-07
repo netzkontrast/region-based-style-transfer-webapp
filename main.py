@@ -12,27 +12,22 @@ app.debug = True
 app.secret_key = "super secret key"
 app.config.from_object(__name__)
 app.config['UPLOAD_FOLDER'] = './uploads/'
-app.config['OUTPUT_FOLDER'] = './uploads/'
+app.config['OUTPUT_FOLDER'] = './outputs/'
+app.config['TEMP_FOLDER'] = './temp/'
 
 CORS(app)
 
 LABEL_NAMES = np.asarray([
-    'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
-    'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike',
-    'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tv'
+    'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tv'
 ])
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def region_based_style_transfer(image_name, image_suffix, style):
+def region_based_style_transfer(image_name, image_suffix, style, blend_img_path):
     fg_img_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name+'.'+image_suffix)
-    bg_img_path = os.path.join(app.config['OUTPUT_FOLDER'], image_name+'_'+style+'.'+image_suffix)
-
-    blend_img_name = 'blend_'+image_name+'_'+style+'.'+image_suffix
-    blend_img_path = os.path.join(app.config['OUTPUT_FOLDER'], blend_img_name)
+    bg_img_path = os.path.join(app.config['TEMP_FOLDER'], image_name+'_'+style+'.'+image_suffix)
 
     graph = load_frozenmodel()
     bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path)
@@ -43,7 +38,7 @@ def region_based_style_transfer(image_name, image_suffix, style):
 
     cv2.imwrite(blend_img_path, blend_img)
 
-    return blend_img_name
+    return True
 
 @app.route('/index')
 def index():
@@ -78,13 +73,16 @@ def upload_file():
             img_path = filename.rsplit('.', 1)[0]
             img_suffix = filename.rsplit('.', 1)[1].lower()
             style = 'wreck'
-            
-            blend_img_path = region_based_style_transfer(img_path, img_suffix, style)
+            blend_img_name = 'blend_'+img_path+'_'+style+'.'+img_suffix
+            blend_img_path = os.path.join(app.config['OUTPUT_FOLDER'], blend_img_name)
 
-            return redirect(url_for('uploaded_file', filename=blend_img_path))
+            if(not (os.path.isfile(blend_img_path))):
+                region_based_style_transfer(img_path, img_suffix, style, blend_img_path)
+
+            return redirect(url_for('output_image', image_name=blend_img_name))
     return '''
     <!doctype html>
-    <title>Upload new File</title>
+    <title>COMS4731 Region-based Style Transfer</title>
     <h1>Upload new File</h1>
     <form method=post enctype=multipart/form-data>
       <p><input type=file name=file>
@@ -92,9 +90,9 @@ def upload_file():
     </form>
     '''
 
-@app.route('/uploads/<filename>', methods=["GET"])
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+@app.route('/outputs/<image_name>', methods=["GET"])
+def output_image(image_name):
+    return send_from_directory(app.config['OUTPUT_FOLDER'], image_name)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
