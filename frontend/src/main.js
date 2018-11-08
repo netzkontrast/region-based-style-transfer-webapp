@@ -3,7 +3,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue from 'bootstrap-vue';
 import VueSelectImage from 'vue-select-image'
 import Vue from 'vue';
-import App from './App';g
+import App from './App';
 import router from './router';
 
 // add stylesheet

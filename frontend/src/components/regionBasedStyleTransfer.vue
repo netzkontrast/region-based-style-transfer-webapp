@@ -4,22 +4,22 @@
       <div class="container">
         <div class="row">
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample1"  :src="sampleImages.sample1" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample1')" :src="sampleImages.sample1" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="sampleImages.sample2" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample2')" :src="sampleImages.sample2" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="sampleImages.sample3" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample3')" :src="sampleImages.sample3" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="sampleImages.sample4" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample4')" :src="sampleImages.sample4" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="sampleImages.sample5" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample5')" :src="sampleImages.sample5" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="sampleImages.sample6" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample6')" :src="sampleImages.sample6" alt="Card image cap">
           </div>
         </div>
         </br>
@@ -28,16 +28,12 @@
             <div class="card">
               <img class="card-img-top" :src="originImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
-
-                <div class="row">
-                  <div class="col-sm-8">
-                    <h3 style="float: right; text-align: left;"><span class="badge badge-info">Origin</span></h3>
-                  </div>
-                  <div class="col-sm-4">
                     <input style="display:none;" type="file" @change="onFileSelected" ref="fileInput">
-                    <button  class="btn btn-primary btn" style="float:right"  @click="$refs.fileInput.click()">Upload</button>
-                  </div>
-                </div>
+                    <button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>
+                    
+                    <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
+
+                    <button  class="btn btn-primary btn" style="float:right" @click="onUpload">Apply</button>
               </div>
             </div>
           </div>
@@ -63,22 +59,22 @@
         </br>
         <div class="row">
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="styleImages.style1" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style1')" :src="styleImages.style1" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="styleImages.style2" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style2')" :src="styleImages.style2" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="styleImages.style3" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style3')" :src="styleImages.style3" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="styleImages.style4" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style4')" :src="styleImages.style4" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="styleImages.style5" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style5')" :src="styleImages.style5" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="styleImages.style6" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style6')" :src="styleImages.style6" alt="Card image cap">
           </div>
         </div>
       </div>
@@ -114,6 +110,7 @@ export default {
         "style5": "https://via.placeholder.com/150",
         "style6": "https://via.placeholder.com/150",
       },
+      demoImage: null,
     }
   },
   methods: {
@@ -156,36 +153,50 @@ export default {
 
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
-      this.onUpload();
+      this.demoImage = null;
     },
+
     onUpload(){
-      var formData = new FormData();
-      formData.append('image', this.selectedFile, this.selectedFile.name);
-      axios.post("http://localhost:5000", formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          onUploadProgress: uploadEvent =>{
-            console.log("Upload Progress: " + Math.round(uploadEvent.loaded / uploadEvent.total * 100));
-          },
-        })
-      .then(res=>{
-        console.log(res);
-        this.updateBlendImage();
-      });
+      if(this.selectedFile){
+        var formData = new FormData();
+        formData.append('image', this.selectedFile, this.selectedFile.name);
+        axios.post("http://localhost:5000", formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: uploadEvent =>{
+              console.log("Upload Progress: " + Math.round(uploadEvent.loaded / uploadEvent.total * 100));
+            },
+          })
+        .then(res=>{
+          console.log(res);
+          this.updateBlendImage(this.selectedFile.name);
+        });
+      }
+      else if(this.demoImage){
+        this.updateBlendImage(this.demoImage.substring(this.demoImage.lastIndexOf("/")+1, this.demoImage.length));
+      }
     },
-    updateBlendImage(){
-      console.log("updateBlendImage");
-      var index_dot = this.selectedFile.name.lastIndexOf(".");
-      var filename = this.selectedFile.name.substring(0, index_dot);
-      var suffix = this.selectedFile.name.substring(index_dot+1, this.selectedFile.name.length);
+
+    updateBlendImage(image_name){
+      var index_dot = image_name.lastIndexOf(".");
+      var filename = image_name.substring(0, index_dot);
+      var suffix = image_name.substring(index_dot+1, image_name.length);
 
       this.globalStyleTransferImage = "http://localhost:5000/get_global_style_transfer_image/" + filename + "_wreck" + "." + suffix;
       this.regionBasedStyleTransferImage = "http://localhost:5000/get_region_based_style_transfer_image/" + "blend_" + filename + "_wreck" + "." + suffix;
-      this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
+      this.originImage = "http://localhost:5000/get_upload_image/" + image_name;
     },
-    chooseSample1(){
-      console.log("chooseSample1");
+
+    chooseSample(sample_id){
+      this.demoImage = this.sampleImages[sample_id];
+      this.originImage = this.sampleImages[sample_id];
+      this.selectedFile = null;
+    },
+
+    applyStyle(style_id){
+      console.log("style_id", style_id);
+      //this.onUpload();
     },
   },
   mounted: function () {
