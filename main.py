@@ -11,11 +11,14 @@ app = Flask(__name__)
 app.debug = True
 app.secret_key = "super secret key"
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = './_upload_images/'
-app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'] = './_region_based_style_transfer_images/'
-app.config['GLOBAL_STYLE_TRANSFER_FOLDER'] = './_global_style_transfer_images/'
-app.config['SAMPLE_FOLDER'] = './_sample_images/'
-app.config['STYLE_FOLDER'] = './_style_images/'
+
+app.config['UPLOAD_PATH'] = './_upload_images/'
+app.config['REGION_BASED_STYLE_TRANSFER_PATH'] = './_region_based_style_transfer_images/'
+app.config['GLOBAL_STYLE_TRANSFER_PATH'] = './_global_style_transfer_images/'
+app.config['SAMPLE_PATH'] = './_sample_images/'
+app.config['STYLE_PATH'] = './_style_images/'
+app.config["STYLE_CPKT_PATH"] = "./models/"
+app.config["SEGMENT_MASK_PATH"] = "./_segment_mask_images/"
 
 CORS(app)
 
@@ -28,11 +31,11 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def region_based_style_transfer(image_name, image_suffix, style, blend_img_path):
-    fg_img_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name+'.'+image_suffix)
-    bg_img_path = os.path.join(app.config['GLOBAL_STYLE_TRANSFER_FOLDER'], image_name+'_'+style+'.'+image_suffix)
+    fg_img_path = os.path.join(app.config['UPLOAD_PATH'], image_name+'.'+image_suffix)
+    bg_img_path = os.path.join(app.config['GLOBAL_STYLE_TRANSFER_PATH'], image_name+'_'+style+'.'+image_suffix)
 
     graph = load_frozenmodel()
-    bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path)
+    bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path, segmentation_save_path="%s/%s.jpg"%(app.config["SEGMENT_MASK_PATH"], image_name))
 
     style_transfer("./models/%s.ckpt"%(style), fg_img_path, bg_img_path)
     
@@ -71,13 +74,13 @@ def upload_file(style_cpkt):
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
 
             img_path = filename.rsplit('.', 1)[0]
             img_suffix = filename.rsplit('.', 1)[1].lower()
             style = style_cpkt
             blend_img_name = 'blend_'+img_path+'_'+style+'.'+img_suffix
-            blend_img_path = os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'], blend_img_name)
+            blend_img_path = os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_PATH'], blend_img_name)
 
             if(not (os.path.isfile(blend_img_path))):
                 region_based_style_transfer(img_path, img_suffix, style, blend_img_path)
@@ -95,23 +98,23 @@ def upload_file(style_cpkt):
 
 @app.route('/get_region_based_style_transfer_image/<image_name>', methods=["GET"])
 def region_based_style_transfer_image(image_name):
-    return send_from_directory(app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'], image_name)
+    return send_from_directory(app.config['REGION_BASED_STYLE_TRANSFER_PATH'], image_name)
 
 @app.route('/get_global_style_transfer_image/<image_name>', methods=["GET"])
 def global_style_transfer_image(image_name):
-    return send_from_directory(app.config['GLOBAL_STYLE_TRANSFER_FOLDER'], image_name)
+    return send_from_directory(app.config['GLOBAL_STYLE_TRANSFER_PATH'], image_name)
 
 @app.route('/get_sample_image/<sample_file_name>', methods=["GET"])
 def sample_image(sample_file_name):
-    return send_from_directory(app.config['SAMPLE_FOLDER'], sample_file_name)
+    return send_from_directory(app.config['SAMPLE_PATH'], sample_file_name)
 
 @app.route('/get_style_image/<style_file_name>', methods=["GET"])
 def style_image(style_file_name):
-    return send_from_directory(app.config['STYLE_FOLDER'], style_file_name)
+    return send_from_directory(app.config['STYLE_PATH'], style_file_name)
 
 @app.route('/get_upload_image/<upload_image_name>', methods=["GET"])
 def upload_image(upload_image_name):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], upload_image_name)
+    return send_from_directory(app.config['UPLOAD_PATH'], upload_image_name)
 
 @app.route('/upload', methods=["POST"])
 def upload():
@@ -124,7 +127,7 @@ def upload():
         return jsonify({"error":"no selected file"})
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
         return jsonify({"error": "no error"})
     else:
         flash('file format is not allowed')
