@@ -1,6 +1,6 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div class="RegionBasedStyleTransfer">
+    <h1>{{ header }}</h1>
     <input type="file" @change="onFileSelected">
     <button @click="onUpload"> Upload </button>
   </div>
@@ -10,10 +10,10 @@
 import axios from 'axios';
 
 export default {
-  name: 'HelloWorld',
+  name: 'RegionBasedStyleTransfer',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      header: 'COMS4731 Region Based Style Transfer',
       selectedFile: null
     }
   },
@@ -28,10 +28,13 @@ export default {
       axios.post("http://localhost:5000", formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
-          }
+          },
+          onUploadProgress: uploadEvent =>{
+            console.log("Upload Progress: " + Math.round(uploadEvent.loaded / uploadEvent.total * 100));
+          },
         })
       .then(res=>{
-        console.log("uploaded!");
+        console.log(res);
       });
     },
   }
