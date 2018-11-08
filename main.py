@@ -11,9 +11,11 @@ app = Flask(__name__)
 app.debug = True
 app.secret_key = "super secret key"
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = './uploads/'
-app.config['OUTPUT_FOLDER'] = './outputs/'
-app.config['TEMP_FOLDER'] = './temp/'
+app.config['UPLOAD_FOLDER'] = './_upload_images/'
+app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'] = './_region_based_style_transfer_images/'
+app.config['GLOBAL_STYLE_TRANSFER_FOLDER'] = './_global_style_transfer_images/'
+app.config['SAMPLE_FOLDER'] = './_sample_images/'
+app.config['STYLE_FOLDER'] = './_style_images/'
 
 CORS(app)
 
@@ -75,12 +77,12 @@ def upload_file():
             img_suffix = filename.rsplit('.', 1)[1].lower()
             style = 'wreck'
             blend_img_name = 'blend_'+img_path+'_'+style+'.'+img_suffix
-            blend_img_path = os.path.join(app.config['OUTPUT_FOLDER'], blend_img_name)
+            blend_img_path = os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'], blend_img_name)
 
             if(not (os.path.isfile(blend_img_path))):
                 region_based_style_transfer(img_path, img_suffix, style, blend_img_path)
 
-            return redirect(url_for('output_image', image_name=blend_img_name))
+            return redirect(url_for('region_based_style_transfer_image', image_name=blend_img_name))
     return '''
     <!doctype html>
     <title>COMS4731 Region-based Style Transfer</title>
@@ -91,9 +93,21 @@ def upload_file():
     </form>
     '''
 
-@app.route('/outputs/<image_name>', methods=["GET"])
-def output_image(image_name):
-    return send_from_directory(app.config['OUTPUT_FOLDER'], image_name)
+@app.route('/get_region_based_style_transfer_image/<image_name>', methods=["GET"])
+def region_based_style_transfer_image(image_name):
+    return send_from_directory(app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'], image_name)
+
+@app.route('/get_global_style_transfer_image/<image_name>', methods=["GET"])
+def global_style_transfer_image(image_name):
+    return send_from_directory(app.config['GLOBAL_STYLE_TRANSFER_FOLDER'], image_name)
+
+@app.route('/get_sample_image/<sample_file_name>', methods=["GET"])
+def sample_image(sample_file_name):
+    return send_from_directory(app.config['SAMPLE_FOLDER'], sample_file_name)
+
+@app.route('/get_style_image/<style_file_name>', methods=["GET"])
+def style_image(style_file_name):
+    return send_from_directory(app.config['STYLE_FOLDER'], style_file_name)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
