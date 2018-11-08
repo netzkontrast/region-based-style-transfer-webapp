@@ -2,31 +2,33 @@
   <div class="RegionBasedStyleTransfer">
     <div>
       <div class="container">
+        <h4><span class="badge badge-primary">Sample Images</span></h4>
         <div class="row">
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample1')" :src="sampleImages.sample1" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top sampleImage" style="cursor:pointer" @click="chooseSample('sample1')" :src="sampleImages.sample1" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample2')" :src="sampleImages.sample2" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top sampleImage" style="cursor:pointer" @click="chooseSample('sample2')" :src="sampleImages.sample2" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample3')" :src="sampleImages.sample3" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top sampleImage" style="cursor:pointer" @click="chooseSample('sample3')" :src="sampleImages.sample3" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample4')" :src="sampleImages.sample4" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top sampleImage" style="cursor:pointer" @click="chooseSample('sample4')" :src="sampleImages.sample4" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample5')" :src="sampleImages.sample5" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top sampleImage" style="cursor:pointer" @click="chooseSample('sample5')" :src="sampleImages.sample5" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="chooseSample('sample6')" :src="sampleImages.sample6" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top sampleImage" style="cursor:pointer" @click="chooseSample('sample6')" :src="sampleImages.sample6" alt="Card image cap">
           </div>
         </div>
-        </br>
+
+        <h4 class="mt-1"><span class="badge badge-primary">Result</span></h4>
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-4 resultRow">
             <div class="card">
-              <img class="card-img-top" :src="originImage" @click="$refs.fileInput.click()" style="cursor:pointer"  alt="Card image cap">
+              <img class="card-img-top showResult" :src="originImage" @click="$refs.fileInput.click()" style="cursor:pointer"  alt="Card image cap">
               <div class="card-body" style="height:42px">
                     <input style="display:none;" type="file" @change="onFileSelected" ref="fileInput">
                     <!--<button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>-->
@@ -38,43 +40,44 @@
             </div>
           </div>
 
-          <div class="col-sm-4">
-            <div class="card" >
-              <img class="card-img-top" :src="globalStyleTransferImage" alt="Card image cap">
+          <div class="col-sm-4 resultRow">
+            <div class="card">
+              <img class="card-img-top showResult" :src="globalStyleTransferImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
                 <h3><span class="badge badge-info">Global Style Transfer</span></h3>
               </div>
             </div>
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-sm-4 resultRow">
             <div class="card">
-              <img class="card-img-top" :src="regionBasedStyleTransferImage" alt="Card image cap">
+              <img class="card-img-top showResult" :src="regionBasedStyleTransferImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
                 <h3><span class="badge badge-info">Region-based Style Transfer</span></h3>
               </div>
             </div>
           </div>
         </div>
-        </br>
+        
+        <h4 class="mt-1"><span class="badge badge-primary">Styles</span></h4>
         <div class="row">
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style1')" :src="styleImages.style1" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top style" style="cursor:pointer" @click="applyStyle('style1')" :src="styleImages.style1" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style2')" :src="styleImages.style2" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top style" style="cursor:pointer" @click="applyStyle('style2')" :src="styleImages.style2" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style3')" :src="styleImages.style3" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top style" style="cursor:pointer" @click="applyStyle('style3')" :src="styleImages.style3" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style4')" :src="styleImages.style4" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top style" style="cursor:pointer" @click="applyStyle('style4')" :src="styleImages.style4" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style5')" :src="styleImages.style5" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top style" style="cursor:pointer" @click="applyStyle('style5')" :src="styleImages.style5" alt="Card image cap">
           </div>
-          <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" style="cursor:pointer" @click="applyStyle('style6')" :src="styleImages.style6" alt="Card image cap">
+          <div class="card col-sm-2">
+            <img class="card-img-top style" style="cursor:pointer" @click="applyStyle('style6')" :src="styleImages.style6" alt="Card image cap">
           </div>
         </div>
       </div>
@@ -91,9 +94,9 @@ export default {
   data () {
     return {
       selectedFile: null,
-      originImage: "https://via.placeholder.com/200",
-      globalStyleTransferImage: "https://via.placeholder.com/200",
-      regionBasedStyleTransferImage: "https://via.placeholder.com/200",
+      originImage: "https://via.placeholder.com/378x270.png",
+      globalStyleTransferImage: "https://via.placeholder.com/378x270.png",
+      regionBasedStyleTransferImage: "https://via.placeholder.com/378x270.png",
       sampleImages: {
         "sample1": "https://via.placeholder.com/150",
         "sample2": "https://via.placeholder.com/150",
@@ -163,8 +166,37 @@ export default {
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
       this.demoImage = null;
-      this.globalStyleTransferImage = "https://via.placeholder.com/200";
-      this.regionBasedStyleTransferImage = "https://via.placeholder.com/200";
+      this.globalStyleTransferImage = "https://via.placeholder.com/378x270.png";
+      this.regionBasedStyleTransferImage = "https://via.placeholder.com/378x270.png";
+
+      if(this.selectedFile.size > 1048576){
+        console.log("File is too large!");
+        return false;
+      }
+      if(this.selectedFile.type != "image/jpeg"){
+        console.log("Unsupport file type!");
+        return false;;
+      }
+      this.fileUpload();
+    },
+
+    fileUpload(){
+      if(this.selectedFile){
+        var formData = new FormData();
+        formData.append('image', this.selectedFile, this.selectedFile.name);
+        axios.post("http://localhost:5000/upload", formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: uploadEvent =>{
+              console.log("Upload Progress: " + Math.round(uploadEvent.loaded / uploadEvent.total * 100));
+            },
+          })
+        .then(res=>{
+          console.log(res);
+          this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
+        });
+      }
     },
 
     onUpload(style_type="wreck"){
@@ -208,8 +240,8 @@ export default {
       this.demoImage = this.sampleImages[sample_id];
       this.originImage = this.sampleImages[sample_id];
       this.selectedFile = null;
-      this.globalStyleTransferImage = "https://via.placeholder.com/200";
-      this.regionBasedStyleTransferImage = "https://via.placeholder.com/200";
+      this.globalStyleTransferImage = "https://via.placeholder.com/378x270.png";
+      this.regionBasedStyleTransferImage = "https://via.placeholder.com/378x270.png";
     },
 
     applyStyle(stypeIdx){
@@ -227,11 +259,33 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .card-img-top {
-    width: 100%;
-    height: 15vw;
-    object-fit: cover;
+  width: 100%;
+  height: 15vw;
+  object-fit: scale-down;
 }
+.card{
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
 .card-body {
     padding:0.1rem;
+}
+.style{
+  object-fit: cover;
+}
+
+.showResult{
+  height:270px;
+  object-fit:scale-down;
+}
+
+.sampleImage{
+  height:100px;
+}
+
+.resultRow{
+  padding-right: 0px;
+  padding-left: 0px;
 }
 </style>
