@@ -28,11 +28,16 @@
             <div class="card">
               <img class="card-img-top" :src="originImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
-                <input style="display:none" type="file" @change="onFileSelected" ref="fileInput">
-                <button  style="float:left" class="btn btn-primary btn" @click="$refs.fileInput.click()"> Upload </button>
 
-                <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
-                <button class="btn btn-primary btn" style="float:right" @click="onUpload"> Apply </button>
+                <div class="row">
+                  <div class="col-sm-8">
+                    <h3 style="float: right; text-align: left;"><span class="badge badge-info">Origin</span></h3>
+                  </div>
+                  <div class="col-sm-4">
+                    <input style="display:none;" type="file" @change="onFileSelected" ref="fileInput">
+                    <button  class="btn btn-primary btn" style="float:right"  @click="$refs.fileInput.click()">Upload </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -151,7 +156,6 @@ export default {
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
       this.onUpload();
-      this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
     },
     onUpload(){
       var formData = new FormData();
@@ -177,6 +181,7 @@ export default {
 
       this.globalStyleTransferImage = "http://localhost:5000/get_global_style_transfer_image/" + filename + "_wreck" + "." + suffix;
       this.regionBasedStyleTransferImage = "http://localhost:5000/get_region_based_style_transfer_image/" + "blend_" + filename + "_wreck" + "." + suffix;
+      this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
     },
   },
   mounted: function () {

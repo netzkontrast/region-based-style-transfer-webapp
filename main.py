@@ -29,7 +29,7 @@ def allowed_file(filename):
 
 def region_based_style_transfer(image_name, image_suffix, style, blend_img_path):
     fg_img_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name+'.'+image_suffix)
-    bg_img_path = os.path.join(app.config['TEMP_FOLDER'], image_name+'_'+style+'.'+image_suffix)
+    bg_img_path = os.path.join(app.config['GLOBAL_STYLE_TRANSFER_FOLDER'], image_name+'_'+style+'.'+image_suffix)
 
     graph = load_frozenmodel()
     bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path)
@@ -112,6 +112,23 @@ def style_image(style_file_name):
 @app.route('/get_upload_image/<upload_image_name>', methods=["GET"])
 def upload_image(upload_image_name):
     return send_from_directory(app.config['UPLOAD_FOLDER'], upload_image_name)
+
+@app.route('/upload', methods=["POST"])
+def upload():
+    if 'image' not in request.files:
+        flash('No file part')
+        return jsonify({"error":"no image file"})
+    file = request.files['image']
+    if file.filename == '':
+        flash('No selected file')
+        return jsonify({"error":"no selected file"})
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return jsonify({"error": "no error"})
+    else:
+        flash('file format is not allowed')
+        return jsonify({"error":"file format is not allowed"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
