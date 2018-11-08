@@ -57,10 +57,11 @@ def ping_pong():
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
-        if 'file' not in request.files:
+        if 'image' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        file = request.files['file']
+        file = request.files['image']
+
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
@@ -85,8 +86,8 @@ def upload_file():
     <title>COMS4731 Region-based Style Transfer</title>
     <h1>Upload new File</h1>
     <form method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
+      <p><input type=file name=image>
+         <input type=submit value=Upload> 
     </form>
     '''
 
