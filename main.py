@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request, redirect, url_for, flash, send_from_directory
+from flask import Flask, jsonify, request, redirect, url_for, flash, send_file, jsonify, send_from_directory
 from flask import render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename

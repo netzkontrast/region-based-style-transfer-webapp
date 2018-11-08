@@ -1,8 +1,13 @@
 <template>
   <div class="RegionBasedStyleTransfer">
+
+  
     <h1>{{ header }}</h1>
+    <div>
     <input type="file" @change="onFileSelected">
-    <button @click="onUpload"> Upload </button>
+    <button class="btn btn-success btn-sm" @click="onUpload"> Upload </button>
+    </div>
+    <img :src="blend_image" alt="blend_image"/>
   </div>
 </template>
 
@@ -14,7 +19,8 @@ export default {
   data () {
     return {
       header: 'COMS4731 Region Based Style Transfer',
-      selectedFile: null
+      selectedFile: null,
+      blend_image: "https://via.placeholder.com/300",
     }
   },
   methods: {
@@ -35,7 +41,16 @@ export default {
         })
       .then(res=>{
         console.log(res);
+        this.updateBlendImage();
       });
+    },
+    updateBlendImage(){
+      console.log("updateBlendImage");
+      var index_dot = this.selectedFile.name.lastIndexOf(".");
+      var filename = this.selectedFile.name.substring(0, index_dot);
+      var suffix = this.selectedFile.name.substring(index_dot+1, this.selectedFile.name.length);
+
+      this.blend_image = "http://localhost:5000/outputs/" + "blend_" + filename + "_wreck" + "." + suffix;
     },
   }
 }
