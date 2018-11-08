@@ -3,67 +3,77 @@
     <div>
       <div class="container">
         <div class="row">
-          <div class="col-sm-2">
-            <img :src="sampleImages.sample1" alt="sample1"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="sampleImages.sample1" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="sampleImages.sample2" alt="sample2"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="sampleImages.sample2" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="sampleImages.sample3" alt="sample3"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="sampleImages.sample3" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="sampleImages.sample4" alt="sample4"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="sampleImages.sample4" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="sampleImages.sample5" alt="sample5"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="sampleImages.sample5" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="sampleImages.sample6" alt="sample6"/>
-          </div>
-        </div>
-        </br>
-        <div class="row">
-          <div class="col-sm-4">
-            Origin
-            </br>
-            <img :src="originImage" alt="originImage"/>
-            </br>
-            <input type="file" @change="onFileSelected">
-            <button class="btn btn-success btn-sm" @click="onUpload"> Upload </button>
-          </div>
-
-          <div class="col-sm-4">
-            Global Style Transfer
-            </br>
-            <img :src="globalStyleTransferImage" alt="globalStyleTransferImage"/>
-          </div>
-
-          <div class="col-sm-4">
-            Region-based Style Transfer
-            </br>
-            <img :src="regionBasedStyleTransferImage" alt="regionBasedStyleTransferImage"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="sampleImages.sample6" alt="Card image cap">
           </div>
         </div>
         </br>
         <div class="row">
-          <div class="col-sm-2">
-            <img :src="styleImages.style1" alt="style1"/>
+          <div class="col-sm-4">
+            <div class="card">
+              <img class="card-img-top" :src="originImage" alt="Card image cap">
+              <div class="card-body" style="height:42px">
+                <input style="display:none" type="file" @change="onFileSelected" ref="fileInput">
+                <button  style="float:left" class="btn btn-primary btn" @click="$refs.fileInput.click()"> Upload </button>
+
+                <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
+                <button class="btn btn-primary btn" style="float:right" @click="onUpload"> Apply </button>
+              </div>
+            </div>
           </div>
-          <div class="col-sm-2">
-            <img :src="styleImages.style2" alt="style2"/>
+
+          <div class="col-sm-4">
+            <div class="card" >
+              <img class="card-img-top" :src="globalStyleTransferImage" alt="Card image cap">
+              <div class="card-body" style="height:42px">
+                <h3><span class="badge badge-info">Global Style Transfer</span></h3>
+              </div>
+            </div>
           </div>
-          <div class="col-sm-2">
-            <img :src="styleImages.style3" alt="style3"/>
+
+          <div class="col-sm-4">
+            <div class="card">
+              <img class="card-img-top" :src="regionBasedStyleTransferImage" alt="Card image cap">
+              <div class="card-body" style="height:42px">
+                <h3><span class="badge badge-info">Region-based Style Transfer</span></h3>
+              </div>
+            </div>
           </div>
-          <div class="col-sm-2">
-            <img :src="styleImages.style4" alt="style4"/>
+        </div>
+        </br>
+        <div class="row">
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="styleImages.style1" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="styleImages.style5" alt="style5"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="styleImages.style2" alt="Card image cap">
           </div>
-          <div class="col-sm-2">
-            <img :src="styleImages.style6" alt="style6"/>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="styleImages.style3" alt="Card image cap">
+          </div>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="styleImages.style4" alt="Card image cap">
+          </div>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="styleImages.style5" alt="Card image cap">
+          </div>
+          <div class="card col-sm-2" style="width: 8rem;">
+            <img class="card-img-top" :src="styleImages.style6" alt="Card image cap">
           </div>
         </div>
       </div>
@@ -140,7 +150,8 @@ export default {
 
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
-      //originImage: "https://via.placeholder.com/200",
+      this.onUpload();
+      this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
     },
     onUpload(){
       var formData = new FormData();
@@ -176,9 +187,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-img {
-	max-width:100%;
-	height:auto;
+.card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: cover;
 }
-
+.card-body {
+    padding:0.1rem;
+}
 </style>

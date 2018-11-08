@@ -109,5 +109,9 @@ def sample_image(sample_file_name):
 def style_image(style_file_name):
     return send_from_directory(app.config['STYLE_FOLDER'], style_file_name)
 
+@app.route('/get_upload_image/<upload_image_name>', methods=["GET"])
+def upload_image(upload_image_name):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], upload_image_name)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
