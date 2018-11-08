@@ -4,7 +4,7 @@
       <div class="container">
         <div class="row">
           <div class="card col-sm-2" style="width: 8rem;">
-            <img class="card-img-top" :src="sampleImages.sample1" alt="Card image cap">
+            <img class="card-img-top" style="cursor:pointer" @click="chooseSample1"  :src="sampleImages.sample1" alt="Card image cap">
           </div>
           <div class="card col-sm-2" style="width: 8rem;">
             <img class="card-img-top" :src="sampleImages.sample2" alt="Card image cap">
@@ -35,7 +35,7 @@
                   </div>
                   <div class="col-sm-4">
                     <input style="display:none;" type="file" @change="onFileSelected" ref="fileInput">
-                    <button  class="btn btn-primary btn" style="float:right"  @click="$refs.fileInput.click()">Upload </button>
+                    <button  class="btn btn-primary btn" style="float:right"  @click="$refs.fileInput.click()">Upload</button>
                   </div>
                 </div>
               </div>
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+
 import axios from 'axios';
 
 export default {
@@ -182,6 +183,9 @@ export default {
       this.globalStyleTransferImage = "http://localhost:5000/get_global_style_transfer_image/" + filename + "_wreck" + "." + suffix;
       this.regionBasedStyleTransferImage = "http://localhost:5000/get_region_based_style_transfer_image/" + "blend_" + filename + "_wreck" + "." + suffix;
       this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
+    },
+    chooseSample1(){
+      console.log("chooseSample1");
     },
   },
   mounted: function () {
