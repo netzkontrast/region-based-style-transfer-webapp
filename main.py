@@ -55,8 +55,8 @@ def index():
 def ping_pong():
     return jsonify('pong!')
 
-@app.route('/', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/<style_cpkt>', methods=['GET', 'POST'])
+def upload_file(style_cpkt):
     if request.method == 'POST':
         # check if the post request has the file part
         if 'image' not in request.files:
@@ -75,7 +75,7 @@ def upload_file():
 
             img_path = filename.rsplit('.', 1)[0]
             img_suffix = filename.rsplit('.', 1)[1].lower()
-            style = 'wreck'
+            style = style_cpkt
             blend_img_name = 'blend_'+img_path+'_'+style+'.'+img_suffix
             blend_img_path = os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_FOLDER'], blend_img_name)
 

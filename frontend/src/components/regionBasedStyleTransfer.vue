@@ -26,14 +26,14 @@
         <div class="row">
           <div class="col-sm-4">
             <div class="card">
-              <img class="card-img-top" :src="originImage" alt="Card image cap">
+              <img class="card-img-top" :src="originImage" @click="$refs.fileInput.click()" style="cursor:pointer"  alt="Card image cap">
               <div class="card-body" style="height:42px">
                     <input style="display:none;" type="file" @change="onFileSelected" ref="fileInput">
-                    <button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>
+                    <!--<button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>-->
                     
                     <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
 
-                    <button  class="btn btn-primary btn" style="float:right" @click="onUpload">Apply</button>
+                   <!-- <button class="btn btn-primary btn" style="float:right" @click="onUpload()">Apply</button>-->
               </div>
             </div>
           </div>
@@ -110,7 +110,16 @@ export default {
         "style5": "https://via.placeholder.com/150",
         "style6": "https://via.placeholder.com/150",
       },
+      styleTypes:{
+        "style1": "la_muse",
+        "style2": "rain_princess",
+        "style3": "scream",
+        "style4": "wreck",
+        "style5": "udnie",
+        "style6": "wave",
+      },
       demoImage: null,
+      currentStyle: "wreck",
     }
   },
   methods: {
@@ -120,7 +129,7 @@ export default {
       var SAMPLE_IMAGE_NAME3 = "VOC2010_18.jpg";
       var SAMPLE_IMAGE_NAME4 = "rhino.jpg";
       var SAMPLE_IMAGE_NAME5 = "hong_ps.jpg";
-      var SAMPLE_IMAGE_NAME6 = "image1.jpg";
+      var SAMPLE_IMAGE_NAME6 = "boy.jpg";
 
       this.sampleImages.sample1 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME1;
       this.sampleImages.sample2 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME2;
@@ -154,13 +163,15 @@ export default {
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
       this.demoImage = null;
+      this.globalStyleTransferImage = "https://via.placeholder.com/200";
+      this.regionBasedStyleTransferImage = "https://via.placeholder.com/200";
     },
 
-    onUpload(){
+    onUpload(style_type="wreck"){
       if(this.selectedFile){
         var formData = new FormData();
         formData.append('image', this.selectedFile, this.selectedFile.name);
-        axios.post("http://localhost:5000", formData, {
+        axios.post("http://localhost:5000/"+style_type, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             },
@@ -170,21 +181,26 @@ export default {
           })
         .then(res=>{
           console.log(res);
-          this.updateBlendImage(this.selectedFile.name);
+          this.updateBlendImage(this.selectedFile.name, style_type);
         });
       }
       else if(this.demoImage){
-        this.updateBlendImage(this.demoImage.substring(this.demoImage.lastIndexOf("/")+1, this.demoImage.length));
+        var image_name = this.demoImage.substring(this.demoImage.lastIndexOf("/")+1, this.demoImage.length);
+        this.updateBlendImage(image_name, style_type);
       }
     },
 
-    updateBlendImage(image_name){
+    updateBlendImage(image_name, style_type){
+      console.log("updateBlendImage:");
+      console.log("image_name", image_name);
+      console.log("style_type", style_type);
+
       var index_dot = image_name.lastIndexOf(".");
       var filename = image_name.substring(0, index_dot);
       var suffix = image_name.substring(index_dot+1, image_name.length);
 
-      this.globalStyleTransferImage = "http://localhost:5000/get_global_style_transfer_image/" + filename + "_wreck" + "." + suffix;
-      this.regionBasedStyleTransferImage = "http://localhost:5000/get_region_based_style_transfer_image/" + "blend_" + filename + "_wreck" + "." + suffix;
+      this.globalStyleTransferImage = "http://localhost:5000/get_global_style_transfer_image/" + filename + "_" + style_type + "." + suffix;
+      this.regionBasedStyleTransferImage = "http://localhost:5000/get_region_based_style_transfer_image/" + "blend_" + filename + "_" + style_type + "." + suffix;
       this.originImage = "http://localhost:5000/get_upload_image/" + image_name;
     },
 
@@ -192,11 +208,14 @@ export default {
       this.demoImage = this.sampleImages[sample_id];
       this.originImage = this.sampleImages[sample_id];
       this.selectedFile = null;
+      this.globalStyleTransferImage = "https://via.placeholder.com/200";
+      this.regionBasedStyleTransferImage = "https://via.placeholder.com/200";
     },
 
-    applyStyle(style_id){
-      console.log("style_id", style_id);
-      //this.onUpload();
+    applyStyle(stypeIdx){
+      this.currentStyle = this.styleTypes[stypeIdx];
+      console.log("style_type", this.currentStyle);
+      this.onUpload(this.currentStyle);
     },
   },
   mounted: function () {

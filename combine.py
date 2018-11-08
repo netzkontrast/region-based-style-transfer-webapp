@@ -81,7 +81,7 @@ def create_colormap(seg_map):
                 seg_map[i][j] = 0
     return colormap[seg_map]
 
-def vis_segmentation(image, seg_map):
+def vis_segmentation(image, seg_map, segmentation_save_path):
     FULL_LABEL_MAP = np.arange(len(LABEL_NAMES)).reshape(len(LABEL_NAMES), 1)
     FULL_COLOR_MAP = create_PASCAL_colormap(FULL_LABEL_MAP)
 
@@ -91,7 +91,7 @@ def vis_segmentation(image, seg_map):
     plt.subplot(grid_spec[0])
     plt.imshow(image)
     plt.axis('off')
-    plt.title('input image')
+    plt.title('Detect image')
 
     plt.subplot(grid_spec[1])
     seg_image = create_colormap(seg_map).astype(np.uint8)
@@ -114,7 +114,7 @@ def vis_segmentation(image, seg_map):
     plt.xticks([], [])
     ax.tick_params(width=0.0)
     plt.grid('off')
-    plt.savefig('segment.png')
+    plt.savefig(segmentation_save_path)
 
 def load_frozenmodel():
     print('> Loading frozen model into memory')
@@ -127,7 +127,7 @@ def load_frozenmodel():
             tf.import_graph_def(seg_graph_def, name='')
     return detection_graph
 
-def segmentation_image(detection_graph, label_names, image_path):
+def segmentation_image(detection_graph, label_names, image_path, segmentation_save_path):
     print("log: Begin to do image segmentation")
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth=True
@@ -140,7 +140,7 @@ def segmentation_image(detection_graph, label_names, image_path):
             image = cv2.resize(image, target_size)
             batch_seg_map = sess.run('SemanticPredictions:0', feed_dict={'ImageTensor:0': [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]})
             seg_map = batch_seg_map[0]
-            vis_segmentation(image, seg_map)
+            vis_segmentation(image, seg_map, segmentation_save_path)
             seg_image = create_colormap(seg_map).astype(np.uint8)
 
             cv2.addWeighted(seg_image,ALPHA,image,1-ALPHA,0,image)
@@ -154,6 +154,8 @@ def segmentation_image(detection_graph, label_names, image_path):
 
 def style_transfer(check_point, in_path, out_path, device_t='/gpu:0', batch_size=1):
     print("log: Begin to style transfer")
+
+    print(check_point, in_path, out_path)
     img_shape = get_img(in_path).shape
     g = tf.Graph()
     curr_num = 0
@@ -245,12 +247,23 @@ def blend_images(fg_path, bg_path, mask):
     return out_image
 
 if __name__ == '__main__':
-    image_name = "hong_ps"
-    image_suffix = "jpg"
-    style = "wreck"
+    STYLE_CPKT_PATH = "./models/"
+    SAMPLE_PATH = "./_sample_images/"
+    GLOBAL_STYLE_TRANSFER_PATH = "./_global_style_transfer_images/"
+    REGION_BASED_STYLE_TRANSFER_PATH = "./_region_based_style_transfer_images/"
+    SEGMENT_MASK_PATH = "./_segment_mask_images/"
 
-    graph = load_frozenmodel()
-    bin_mask = segmentation_image(graph, LABEL_NAMES, image_path="./sample_images/%s.%s"%(image_name, image_suffix))
-    style_transfer("./models/%s.ckpt"%(style), "./sample_images/%s.%s"%(image_name, image_suffix), "./outputs/%s_%s.%s"%(image_name, style, image_suffix))
-    blend_img = blend_images(fg_path="./sample_images/%s.%s"%(image_name, image_suffix), bg_path="./outputs/%s_%s.%s"%(image_name, style, image_suffix), mask=bin_mask)
-    cv2.imwrite("./outputs/blend_%s_%s.%s"%(image_name, style, image_suffix), blend_img)
+    sample_images = ["bird", "hong_ps", "boy", "rhino", "TLPS-7103_small", "VOC2010_18"]
+    image_suffix_list = ["jpg", "jpg", "jpg", "jpg", "jpg", "jpg"]
+    styles = ["la_muse", "rain_princess", "scream", "wreck", "udnie", "wave"]
+
+    for image_name, image_suffix in zip(sample_images, image_suffix_list):
+        for style in styles:
+            graph = load_frozenmodel()
+            bin_mask = segmentation_image(graph, LABEL_NAMES, image_path="%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), segmentation_save_path="%s/%s.jpg"%(SEGMENT_MASK_PATH, image_name))
+
+            style_transfer("%s%s.ckpt"%(STYLE_CPKT_PATH, style), "%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix))
+
+            blend_img = blend_images(fg_path="%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
+
+            cv2.imwrite("%s/blend_%s_%s.%s"%(REGION_BASED_STYLE_TRANSFER_PATH, image_name, style, image_suffix), blend_img)
