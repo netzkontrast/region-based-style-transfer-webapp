@@ -123,6 +123,10 @@ export default {
       },
       demoImage: null,
       currentStyle: "wreck",
+      //host: "localhost",
+      //port: "5000",
+      host: "35.236.229.209",
+      port: "5000",
     }
   },
   methods: {
@@ -134,12 +138,13 @@ export default {
       var SAMPLE_IMAGE_NAME5 = "hong_ps.jpg";
       var SAMPLE_IMAGE_NAME6 = "boy.jpg";
 
-      this.sampleImages.sample1 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME1;
-      this.sampleImages.sample2 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME2;
-      this.sampleImages.sample3 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME3;
-      this.sampleImages.sample4 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME4;
-      this.sampleImages.sample5 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME5;
-      this.sampleImages.sample6 = "http://localhost:5000/get_sample_image/" + SAMPLE_IMAGE_NAME6;
+
+      this.sampleImages.sample1 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME1;
+      this.sampleImages.sample2 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME2;
+      this.sampleImages.sample3 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME3;
+      this.sampleImages.sample4 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME4;
+      this.sampleImages.sample5 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME5;
+      this.sampleImages.sample6 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME6;
     },
 
     updateStyleImage(){
@@ -150,12 +155,12 @@ export default {
       var STYLE_IMAGE_NAME5 = "udnie.jpg";
       var STYLE_IMAGE_NAME6 = "wave.jpg";
 
-      this.styleImages.style1 = "http://localhost:5000/get_style_image/" + STYLE_IMAGE_NAME1;
-      this.styleImages.style2 = "http://localhost:5000/get_style_image/" + STYLE_IMAGE_NAME2;
-      this.styleImages.style3 = "http://localhost:5000/get_style_image/" + STYLE_IMAGE_NAME3;
-      this.styleImages.style4 = "http://localhost:5000/get_style_image/" + STYLE_IMAGE_NAME4;
-      this.styleImages.style5 = "http://localhost:5000/get_style_image/" + STYLE_IMAGE_NAME5;
-      this.styleImages.style6 = "http://localhost:5000/get_style_image/" + STYLE_IMAGE_NAME6;
+      this.styleImages.style1 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME1;
+      this.styleImages.style2 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME2;
+      this.styleImages.style3 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME3;
+      this.styleImages.style4 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME4;
+      this.styleImages.style5 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME5;
+      this.styleImages.style6 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME6;
     },
     
     onMounted(){
@@ -184,7 +189,7 @@ export default {
       if(this.selectedFile){
         var formData = new FormData();
         formData.append('image', this.selectedFile, this.selectedFile.name);
-        axios.post("http://localhost:5000/upload", formData, {
+        axios.post("http://" + this.host + ":" + this.port + "/upload", formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             },
@@ -194,7 +199,7 @@ export default {
           })
         .then(res=>{
           console.log(res);
-          this.originImage = "http://localhost:5000/get_upload_image/" + this.selectedFile.name;
+          this.originImage = "http://" + this.host + ":" + this.port + "/get_upload_image/" + this.selectedFile.name;
         });
       }
     },
@@ -203,7 +208,7 @@ export default {
       if(this.selectedFile){
         var formData = new FormData();
         formData.append('image', this.selectedFile, this.selectedFile.name);
-        axios.post("http://localhost:5000/"+style_type, formData, {
+        axios.post("http://" + this.host + ":" + this.port + "/"+style_type, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             },
@@ -231,9 +236,9 @@ export default {
       var filename = image_name.substring(0, index_dot);
       var suffix = image_name.substring(index_dot+1, image_name.length);
 
-      this.globalStyleTransferImage = "http://localhost:5000/get_global_style_transfer_image/" + filename + "_" + style_type + "." + suffix;
-      this.regionBasedStyleTransferImage = "http://localhost:5000/get_region_based_style_transfer_image/" + "blend_" + filename + "_" + style_type + "." + suffix;
-      this.originImage = "http://localhost:5000/get_upload_image/" + image_name;
+      this.globalStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_global_style_transfer_image/" + filename + "_" + style_type + "." + suffix;
+      this.regionBasedStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_image/" + "blend_" + filename + "_" + style_type + "." + suffix;
+      this.originImage = "http://" + this.host + ":" + this.port + "/get_upload_image/" + image_name;
     },
 
     chooseSample(sample_id){
