@@ -84,7 +84,7 @@
     </div>
     <modal id="svgModal" name="loadingModal" width="300px" height="350px" :clickToClose="false">
       <img src="/static/Spinner-1s-200px.svg" alt="loading" style="vertical-align: middle;" width="300px" height="300px"/>
-      <h4  style="text-align:center;" ><span class="badge badge-warning">Style Transfering...</span></h4>
+      <h4  style="text-align:center;" ><span class="badge badge-warning">Style Transfering ...</span></h4>
     </modal>
 
     <v-dialog id="alertModel" name="alertModal" width="200px" height="50px">
