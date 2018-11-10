@@ -83,7 +83,7 @@
       </div>
     </div>
     <modal id="svgModal" name="loadingModal" width="300px" height="350px" :clickToClose="false">
-      <img src="/static/Spinner-1s-200px.svg" alt="loading" style="vertical-align: middle;" width="300px" height="300px"/>
+      <img :src="svgPath" alt="loading" style="vertical-align: middle;" width="300px" height="300px"/>
       <h4  style="text-align:center;" ><span class="badge badge-warning">Style Transfering ...</span></h4>
     </modal>
 
@@ -135,6 +135,7 @@ export default {
       //port: "5000",
       host: "35.236.229.209",
       port: "5000",
+      svgPath: null,
     }
   },
   methods: {
@@ -188,6 +189,7 @@ export default {
     },
     
     onMounted(){
+      this.svgPath = "./static/Spinner-1s-200px.svg";
       this.updateSampleImage();
       this.updateStyleImage();
     },
