@@ -30,12 +30,12 @@
             <div class="card">
               <img class="card-img-top showResult" :src="originImage" @click="$refs.fileInput.click()" style="cursor:pointer"  alt="Card image cap">
               <div class="card-body" style="height:42px">
-                    <input style="display:none;" type="file" @change="onFileSelected" ref="fileInput">
-                    <!--<button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>-->
-                    
-                    <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
+                <input id="input-image" style="display:none;" type="file" @change="onFileSelected" ref="fileInput" accept=".jpg, .jpeg">
+                <!--<button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>-->
+                
+                <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
 
-                   <!-- <button class="btn btn-primary btn" style="float:right" @click="onUpload()">Apply</button>-->
+                <!-- <button class="btn btn-primary btn" style="float:right" @click="onUpload()">Apply</button>-->
               </div>
             </div>
           </div>
@@ -82,6 +82,14 @@
         </div>
       </div>
     </div>
+    <modal id="svgModal" name="loadingModal" width="300px" height="350px" :clickToClose="false">
+      <img src="/static/Spinner-1s-200px.svg" alt="loading" style="vertical-align: middle;" width="300px" height="300px"/>
+      <h4  style="text-align:center;" ><span class="badge badge-warning">Style Transfering...</span></h4>
+    </modal>
+
+    <v-dialog id="alertModel" name="alertModal" width="200px" height="50px">
+    </v-dialog>
+    
   </div>
 </template>
 
@@ -130,6 +138,23 @@ export default {
     }
   },
   methods: {
+    loadingModalShow () {
+      this.$modal.show('loadingModal');
+    },
+    loadingModalHide () {
+      this.$modal.hide('loadingModal');
+    },
+    alertModalShow (alertReason) {
+      this.$modal.show('dialog', {
+        title: 'Alert!',
+        text: 'Error:' + alertReason,
+        buttons: [
+          {
+            title: 'Close'
+          }
+      ]
+      })
+    },
     updateSampleImage(){
       var SAMPLE_IMAGE_NAME1 = "TLPS-7103_small.jpg";
       var SAMPLE_IMAGE_NAME2 = "bird.jpg";
@@ -137,7 +162,6 @@ export default {
       var SAMPLE_IMAGE_NAME4 = "rhino.jpg";
       var SAMPLE_IMAGE_NAME5 = "hong_ps.jpg";
       var SAMPLE_IMAGE_NAME6 = "boy.jpg";
-
 
       this.sampleImages.sample1 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME1;
       this.sampleImages.sample2 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME2;
@@ -175,14 +199,23 @@ export default {
       this.regionBasedStyleTransferImage = "https://via.placeholder.com/378x270.png";
 
       if(this.selectedFile.size > 1048576){
+        this.alertModalShow("File is too large!");
         console.log("File is too large!");
+        this.selectedFile = null;
+        document.querySelector('#input-image').value='';
         return false;
       }
-      if(this.selectedFile.type != "image/jpeg"){
+      else if(this.selectedFile.type != "image/jpeg"){
+        this.alertModalShow("Unsupport file type!");
         console.log("Unsupport file type!");
+        this.selectedFile = null;
+        document.querySelector('#input-image').value='';
         return false;;
       }
-      this.fileUpload();
+      else{
+        document.querySelector('#input-image').value='';
+        this.fileUpload();
+      }
     },
 
     fileUpload(){
@@ -206,6 +239,7 @@ export default {
 
     onUpload(style_type="wreck"){
       if(this.selectedFile){
+        this.loadingModalShow();
         var formData = new FormData();
         formData.append('image', this.selectedFile, this.selectedFile.name);
         axios.post("http://" + this.host + ":" + this.port + "/"+style_type, formData, {
@@ -222,15 +256,19 @@ export default {
         });
       }
       else if(this.demoImage){
+        this.loadingModalShow();
         var image_name = this.demoImage.substring(this.demoImage.lastIndexOf("/")+1, this.demoImage.length);
         this.updateBlendImage(image_name, style_type);
+      }
+      else{
+        this.alertModalShow();
       }
     },
 
     updateBlendImage(image_name, style_type){
-      console.log("updateBlendImage:");
-      console.log("image_name", image_name);
-      console.log("style_type", style_type);
+      console.log("func: updateBlendImage ----------");
+      console.log("image_name: ", image_name);
+      console.log("style_type: ", style_type);
 
       var index_dot = image_name.lastIndexOf(".");
       var filename = image_name.substring(0, index_dot);
@@ -239,6 +277,8 @@ export default {
       this.globalStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_global_style_transfer_image/" + filename + "_" + style_type + "." + suffix;
       this.regionBasedStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_image/" + "blend_" + filename + "_" + style_type + "." + suffix;
       this.originImage = "http://" + this.host + ":" + this.port + "/get_upload_image/" + image_name;
+
+      this.loadingModalHide();
     },
 
     chooseSample(sample_id){
@@ -251,7 +291,7 @@ export default {
 
     applyStyle(stypeIdx){
       this.currentStyle = this.styleTypes[stypeIdx];
-      console.log("style_type", this.currentStyle);
+      console.log("style_type: ", this.currentStyle);
       this.onUpload(this.currentStyle);
     },
   },
@@ -292,5 +332,10 @@ export default {
 .resultRow{
   padding-right: 0px;
   padding-left: 0px;
+}
+
+#svgModal{
+   opacity: 0.9;
+   line-height: 300px;
 }
 </style>
