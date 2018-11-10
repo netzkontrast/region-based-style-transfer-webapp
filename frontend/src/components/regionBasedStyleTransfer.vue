@@ -87,7 +87,7 @@
       <h4  style="text-align:center;" ><span class="badge badge-warning">Style Transfering ...</span></h4>
     </modal>
 
-    <v-dialog id="alertModel" name="alertModal" width="200px" height="50px">
+    <v-dialog id="alertModel" name="alertModal" width="300px" height="80px">
     </v-dialog>
     
   </div>
@@ -145,10 +145,10 @@ export default {
     loadingModalHide () {
       this.$modal.hide('loadingModal');
     },
-    alertModalShow (alertReason) {
+    alertModalShow (alertReason, advice="") {
       this.$modal.show('dialog', {
-        title: 'Alert!',
-        text: 'Error:' + alertReason,
+        title: 'Error!',
+        text: 'Error: ' + alertReason + " \n " + advice,
         buttons: [
           {
             title: 'Close'
@@ -201,15 +201,15 @@ export default {
       this.regionBasedStyleTransferImage = "https://via.placeholder.com/378x270.png";
 
       if(this.selectedFile.size > 1048576){
-        this.alertModalShow("File is too large!");
-        console.log("File is too large!");
+        this.alertModalShow("File is too large!", "Please make sure the size of image is smaller than 1MB");
+        console.log("File is too large! Please make sure the size of image is smaller than 1MB");
         this.selectedFile = null;
         document.querySelector('#input-image').value='';
         return false;
       }
       else if(this.selectedFile.type != "image/jpeg"){
-        this.alertModalShow("Unsupport file type!");
-        console.log("Unsupport file type!");
+        this.alertModalShow("Unsupport file type!", "Current only support jpg and jepg image file");
+        console.log("Unsupport file type! Current only support jpg and jepg image file");
         this.selectedFile = null;
         document.querySelector('#input-image').value='';
         return false;;
@@ -263,7 +263,7 @@ export default {
         this.updateBlendImage(image_name, style_type);
       }
       else{
-        this.alertModalShow();
+        this.alertModalShow("Please either use sample image or upload your own image!");
       }
     },
 
