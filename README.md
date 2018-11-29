@@ -22,6 +22,8 @@ Backend:
    python main.py
 ```
 
+Then the website could be visited via http://35.245.64.0:8080/#/
+
 NOTE:
 
 > You need to change the url of frontend to receive from backend. (public url of GCP)
