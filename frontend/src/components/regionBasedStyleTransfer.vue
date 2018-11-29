@@ -53,7 +53,7 @@
             <div class="card">
               <img class="card-img-top showResult" :src="regionBasedStyleTransferImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
-                <h3><span class="badge badge-info">Region-based Style Transfer</span></h3>
+                <h3><span class="badge badge-info">Background Style Transfer</span></h3>
               </div>
             </div>
           </div>
