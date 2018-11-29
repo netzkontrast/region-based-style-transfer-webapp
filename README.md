@@ -3,9 +3,28 @@ region-based-style-transfer-webapp
 
 ## Main Algorithms.
 
-@TODO
+- Style Transfering
+- Mask RNN
+- Image blending (feathering)
 
 
+## Usage:
+
+Frontend: 
+```
+   cd ./region-based-style-transfer-webapp/frontend/
+   HOST='0.0.0.0' PORT=8080 npm start
+```
+
+Backend:
+
+```
+   python main.py
+```
+
+NOTE:
+
+> You need to change the url of frontend to receive from backend. (public url of GCP)
 
 
 ## Flask and GCP
