@@ -133,7 +133,7 @@ export default {
       currentStyle: "wreck",
       //host: "localhost",
       //port: "5000",
-      host: "35.245.64.0",
+      host: "35.245.30.254",
       port: "5000",
       svgPath: null,
     }
