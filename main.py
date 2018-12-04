@@ -17,7 +17,7 @@ app.config['REGION_BASED_STYLE_TRANSFER_PATH'] = './_region_based_style_transfer
 app.config['GLOBAL_STYLE_TRANSFER_PATH'] = './_global_style_transfer_images/'
 app.config['SAMPLE_PATH'] = './_sample_images/'
 app.config['STYLE_PATH'] = './_style_images/'
-app.config["STYLE_CPKT_PATH"] = "./models/"
+app.config["STYLE_CPKT_PATH"] = "./models/style_models"
 app.config["SEGMENT_MASK_PATH"] = "./_segment_mask_images/"
 
 CORS(app)
