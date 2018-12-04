@@ -37,7 +37,7 @@ def region_based_style_transfer(image_name, image_suffix, style, blend_img_path)
     graph = load_frozenmodel()
     bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path, segmentation_save_path="%s/%s.jpg"%(app.config["SEGMENT_MASK_PATH"], image_name))
 
-    style_transfer("./models/%s.ckpt"%(style), fg_img_path, bg_img_path)
+    style_transfer(style, fg_img_path, bg_img_path)
     
     blend_img = blend_images(fg_path=fg_img_path, bg_path=bg_img_path, mask=bin_mask)
 
@@ -79,6 +79,7 @@ def upload_file(style_cpkt):
             img_path = filename.rsplit('.', 1)[0]
             img_suffix = filename.rsplit('.', 1)[1].lower()
             style = style_cpkt
+
             blend_img_name = 'blend_'+img_path+'_'+style+'.'+img_suffix
             blend_img_path = os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_PATH'], blend_img_name)
 

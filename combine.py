@@ -42,6 +42,23 @@ DOWNLOAD_BASE   = "None"
 BBOX            = False
 MINAREA         = 1000
 
+STYLE_MODEL_PATH = "./models/style_models/"
+STYLE_MODEL_MAP = {
+    "la_muse": STYLE_MODEL_PATH + "la_muse/la_muse.ckpt",
+    "rain_princess": STYLE_MODEL_PATH + "rain_princess/rain_princess.ckpt",
+    "scream": STYLE_MODEL_PATH + "scream/scream.ckpt",
+    "udnie": STYLE_MODEL_PATH + "udnie/udnie.ckpt",
+    "wave": STYLE_MODEL_PATH + "wave/wave.ckpt",
+    "wreck": STYLE_MODEL_PATH + "wreck/wreck.ckpt",
+    
+    "dt1541": STYLE_MODEL_PATH + "dt1541/",
+    "a11268": STYLE_MODEL_PATH + "a11268/",
+    "acrylic": STYLE_MODEL_PATH + "acrylic/",
+    "chris-barbalis": STYLE_MODEL_PATH + "chris-barbalis/",
+    "dt3108": STYLE_MODEL_PATH + "dt3108/",
+}
+
+
 LABEL_NAMES = np.asarray([
     'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tv'
 ])
@@ -182,10 +199,14 @@ def segmentation_image(detection_graph, label_names, image_path, segmentation_sa
             vis_segmentation(ori_image, (bin_mask*15).astype(np.int32), segmentation_save_path)
     return bin_mask
 
-def style_transfer(check_point, in_path, out_path, device_t='/gpu:0', batch_size=1):
+def style_transfer(style, in_path, out_path, device_t='/gpu:0', batch_size=1):
     print("log: Begin to style transfer")
 
-    print(check_point, in_path, out_path)
+    print(STYLE_MODEL_MAP)
+    style = STYLE_MODEL_MAP[style]
+    print(style, in_path, out_path)
+    print("##########################")
+
     img_shape = get_img(in_path).shape
     g = tf.Graph()
     curr_num = 0
@@ -196,14 +217,14 @@ def style_transfer(check_point, in_path, out_path, device_t='/gpu:0', batch_size
         img_placeholder = tf.placeholder(tf.float32, shape=batch_shape, name='img_placeholder')
         preds = transform.net(img_placeholder)
         saver = tf.train.Saver()
-        if os.path.isdir(check_point):
-            ckpt = tf.train.get_checkpoint_state(check_point)
+        if os.path.isdir(style):
+            ckpt = tf.train.get_checkpoint_state(style)
             if ckpt and ckpt.model_checkpoint_path:
                 saver.restore(sess, ckpt.model_checkpoint_path)
             else:
                 raise Exception("No checkpoint found...")
         else:
-            saver.restore(sess, check_point)
+            saver.restore(sess, style)
 
         img = get_img(in_path)
         _preds = sess.run(preds, feed_dict={img_placeholder:[img]})
@@ -370,7 +391,7 @@ if __name__ == '__main__':
             graph = load_frozenmodel()
             bin_mask = segmentation_image(graph, LABEL_NAMES, image_path="%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), segmentation_save_path="%s/%s.jpg"%(SEGMENT_MASK_PATH, image_name))
             
-            style_transfer("%s%s.ckpt"%(STYLE_CPKT_PATH, style), "%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix))
+            style_transfer(style, "%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix))
 
             color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
             blend_img = blend_images(fg_path="%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)

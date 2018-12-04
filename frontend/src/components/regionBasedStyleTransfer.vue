@@ -122,7 +122,7 @@ export default {
         "style6": "https://via.placeholder.com/150",
       },
       styleTypes:{
-        "style1": "la_muse",
+        "style1": "a11268",
         "style2": "rain_princess",
         "style3": "scream",
         "style4": "wreck",
@@ -131,10 +131,10 @@ export default {
       },
       demoImage: null,
       currentStyle: "wreck",
-      //host: "localhost",
-      //port: "5000",
-      host: "35.245.30.254",
+      host: "localhost",
       port: "5000",
+      // host: "35.245.30.254",
+      // port: "5000",
       svgPath: null,
     }
   },
