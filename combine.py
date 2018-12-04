@@ -331,10 +331,11 @@ def color_transfer(img_path, style_image_path, style_data_path, output_path):
     bucket_count = {}
     for i in range(mImg):
         for j in range(nImg):
-            bucket = int(rgb_to_lab(img[i, j]).dot(qImg) * 10)
+            bucket = int(rgb_to_lab(img[i, j]).dot(qImg) * 10000)
             bucketImg[i, j] = bucket
             bucket_count.setdefault(bucket, 0)
             bucket_count[bucket] += 1
+    
     curr = 0
     bucket_mapping = {}
     sorted_buckets = sorted(bucket_count.keys())
@@ -374,5 +375,5 @@ if __name__ == '__main__':
 
             color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
             blend_img = blend_images(fg_path="%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
-
+            
             cv2.imwrite("%s/blend_%s_%s.%s"%(REGION_BASED_STYLE_TRANSFER_PATH, image_name, style, image_suffix), blend_img)
