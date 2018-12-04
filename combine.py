@@ -331,7 +331,7 @@ def color_transfer(img_path, style_image_path, style_data_path, output_path):
     bucket_count = {}
     for i in range(mImg):
         for j in range(nImg):
-            bucket = int(rgb_to_lab(img[i, j]).dot(qImg) * 10)
+            bucket = int(rgb_to_lab(img[i, j]).dot(qImg) * 10000)
             bucketImg[i, j] = bucket
             bucket_count.setdefault(bucket, 0)
             bucket_count[bucket] += 1
