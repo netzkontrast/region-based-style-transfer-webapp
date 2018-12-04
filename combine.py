@@ -30,6 +30,7 @@ import subprocess
 import numpy
 from moviepy.video.io.VideoFileClip import VideoFileClip
 import moviepy.video.io.ffmpeg_writer as ffmpeg_writer
+import scipy
 
 ## LOAD CONFIG PARAMS ##
 VIDEO_INPUT     = 0
@@ -127,6 +128,32 @@ def load_frozenmodel():
             tf.import_graph_def(seg_graph_def, name='')
     return detection_graph
 
+def optimize_boundary(img, mask, depth):
+    img_edges = cv2.Canny(img, 200, 250)
+    dist_edges, inds = scipy.ndimage.morphology.distance_transform_edt(np.where(img_edges > 0, 0, 1), return_indices = True)
+    dist = scipy.ndimage.morphology.distance_transform_edt(mask)
+    q = []
+    visited = set()
+    m, n = mask.shape
+    for i in range(m):
+        for j in range(n):
+            if dist[i, j] == 1:
+                q.append([i, j])
+                visited.add(i*n+j)
+    while q:
+        i, j = q.pop(0)
+        if dist[i, j] >= depth:
+            break
+        if dist_edges[i, j] >= depth or dist_edges[i, j] == 0 or dist[inds[0, i, j], inds[1, i, j]] < dist[i, j] or dist[inds[0, i, j], inds[1, i, j]] > 30:
+            continue
+        mask[i, j] = 0
+        for x, y in [[i+1, j], [i-1, j], [i, j+1], [i, j-1]]:
+            if x < 0 or x >= m or y < 0 or y >= n or x*n+y in visited or mask[x, y] == 0 or dist[x, y] < dist[i, j]:
+                continue
+            q.append([x, y])
+            visited.add(x*n+y)
+    return img_edges, mask
+
 def segmentation_image(detection_graph, label_names, image_path, segmentation_save_path):
     print("log: Begin to do image segmentation")
     config = tf.ConfigProto(allow_soft_placement=True)
@@ -134,13 +161,14 @@ def segmentation_image(detection_graph, label_names, image_path, segmentation_sa
     with detection_graph.as_default():
         with tf.Session(graph=detection_graph) as sess:
             image = cv2.imread(image_path)
+            ori_image = image
             width, height, _ = image.shape
             resize_ratio = 1.0 * 513/ max(width, height)
             target_size = (int(resize_ratio * image.shape[1]), int(resize_ratio * image.shape[0]))
             image = cv2.resize(image, target_size)
             batch_seg_map = sess.run('SemanticPredictions:0', feed_dict={'ImageTensor:0': [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]})
             seg_map = batch_seg_map[0]
-            vis_segmentation(image, seg_map, segmentation_save_path)
+            #vis_segmentation(image, seg_map, segmentation_save_path)
             seg_image = create_colormap(seg_map).astype(np.uint8)
 
             cv2.addWeighted(seg_image,ALPHA,image,1-ALPHA,0,image)
@@ -149,7 +177,9 @@ def segmentation_image(detection_graph, label_names, image_path, segmentation_sa
             bin_mask = cal_bin_mask(seg_map)
             bin_mask = bin_mask / 255
             bin_mask = cv2.resize(bin_mask, (height, width))
-
+            u = min(height, width) // 30
+            img_edges, bin_mask = optimize_boundary(ori_image, bin_mask, u)
+            vis_segmentation(ori_image, (bin_mask*15).astype(np.int32), segmentation_save_path)
     return bin_mask
 
 def style_transfer(check_point, in_path, out_path, device_t='/gpu:0', batch_size=1):
@@ -246,14 +276,92 @@ def blend_images(fg_path, bg_path, mask):
     #cv2.imshow("out", out_image)
     return out_image
 
+def rgb_to_lab(v):
+    M1 = np.array([[0.3811, 0.5783, 0.0402], [0.1967, 0.7244, 0.0782], [0.0241, 0.1288, 0.8444]])
+    lms = M1.dot(v)
+    lms = np.where(lms > 0.0000000001, np.log10(lms), -10)
+    M2 = np.array([[0.57735, 0.57735, 0.57735], [0.40825, 0.40825, -0.8165], [0.70711, -0.70711, 0]])
+    lab = M2.dot(lms)
+    return lab
+    
+def color_transfer(img_path, style_image_path, style_data_path, output_path):
+    mStyle, nStyle = -1, -1
+    style = None
+    list_style = []
+    if os.path.exists(style_data_path):
+        for line in open(style_data_path):
+            tmp = line.split('\t')
+            if mStyle < 0:
+                mStyle, nStyle = int(tmp[0].strip()), int(tmp[1].strip())
+                style = np.zeros((mStyle, nStyle, 3))
+                continue
+            i, j, r, g, b = int(tmp[0].strip()), int(tmp[1].strip()), int(tmp[2].strip()), int(tmp[3].strip()), int(tmp[4].strip())
+            list_style.append([i, j, 1])
+            style[i, j] = [r, g, b]
+    else:
+        style = cv2.imread(style_image_path)
+        mStyle, nStyle = style.shape[0], style.shape[1]
+    
+        # 1d PCA
+        X = np.array([rgb_to_lab(v) for v in style.reshape((mStyle*nStyle, 3))])
+        l, v = np.linalg.eig(X.T.dot(X))
+        q = v[np.argmax(abs(l))]
+        if q.dot([1,1,1]) < 0:
+            q = -q
+        list_style = [[i, j, rgb_to_lab(style[i, j]).dot(q)] for i in range(mStyle) for j in range(nStyle)]
+    
+        list_style.sort(key = lambda x:x[2])
+        fout = open(style_data_path, 'w')
+        fout.write("%d\t%d\n"%(mStyle, nStyle))
+        for i, j, _ in list_style:
+            fout.write("%d\t%d\t%d\t%d\t%d\n" % (i, j, style[i, j, 0], style[i, j, 1], style[i, j, 2]))
+        fout.close()
+        
+
+    img = cv2.imread(img_path)
+    mImg, nImg = img.shape[0], img.shape[1]
+    
+    X = np.array([rgb_to_lab(v) for v in img.reshape((mImg*nImg, 3))])
+    l, v = np.linalg.eig(X.T.dot(X))
+    qImg = v[np.argmax(abs(l))]
+    if qImg.dot([1,1,1]) < 0:
+        qImg = -qImg
+
+    bucketImg = np.zeros(img.shape[:2])
+    bucket_count = {}
+    for i in range(mImg):
+        for j in range(nImg):
+            bucket = int(rgb_to_lab(img[i, j]).dot(qImg) * 10)
+            bucketImg[i, j] = bucket
+            bucket_count.setdefault(bucket, 0)
+            bucket_count[bucket] += 1
+    curr = 0
+    bucket_mapping = {}
+    sorted_buckets = sorted(bucket_count.keys())
+    for bucket in sorted_buckets:
+        bucket_mapping[bucket] = curr + bucket_count[bucket] // 2
+        curr += bucket_count[bucket]
+    
+    out_image = np.zeros_like(img)
+    for i in range(mImg):
+        for j in range(nImg):
+            bucket = bucketImg[i, j]
+            mapped_index = min(int(bucket_mapping[bucket] * mStyle * nStyle / mImg / nImg), mStyle*nStyle-1)
+            mapped_pos = list_style[mapped_index]
+            out_image[i, j] = style[mapped_pos[0], mapped_pos[1]]
+    cv2.imwrite(output_path, out_image)
+
 if __name__ == '__main__':
     STYLE_CPKT_PATH = "./models/"
     SAMPLE_PATH = "./_sample_images/"
     GLOBAL_STYLE_TRANSFER_PATH = "./_global_style_transfer_images/"
     REGION_BASED_STYLE_TRANSFER_PATH = "./_region_based_style_transfer_images/"
     SEGMENT_MASK_PATH = "./_segment_mask_images/"
+    GLOBAL_COLOR_TRANSFER_PATH = "./_color_transfer/_global_color_transfer_images/"
+    STYLE_DATA_PATH = "./_color_transfer/_style_data/"
+    STYLE_IMAGE_PATH = "./_style_images/"
 
-    sample_images = ["bird", "hong_ps", "boy", "rhino", "TLPS-7103_small", "VOC2010_18"]
+    sample_images = ["girl1", "girl2", "girl3", "man1", "man2", "VOC2010_18"]
     image_suffix_list = ["jpg", "jpg", "jpg", "jpg", "jpg", "jpg"]
     styles = ["la_muse", "rain_princess", "scream", "wreck", "udnie", "wave"]
 
@@ -261,9 +369,10 @@ if __name__ == '__main__':
         for style in styles:
             graph = load_frozenmodel()
             bin_mask = segmentation_image(graph, LABEL_NAMES, image_path="%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), segmentation_save_path="%s/%s.jpg"%(SEGMENT_MASK_PATH, image_name))
-
+            
             style_transfer("%s%s.ckpt"%(STYLE_CPKT_PATH, style), "%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix))
 
-            blend_img = blend_images(fg_path="%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
+            color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
+            blend_img = blend_images(fg_path="%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
 
             cv2.imwrite("%s/blend_%s_%s.%s"%(REGION_BASED_STYLE_TRANSFER_PATH, image_name, style, image_suffix), blend_img)
