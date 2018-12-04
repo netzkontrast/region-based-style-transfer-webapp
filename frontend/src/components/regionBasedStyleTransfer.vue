@@ -97,14 +97,40 @@
 
 import axios from 'axios';
 
+const STYLE_TYPES = {
+  "style1": "a11268",
+  "style2": "dt1541",
+  "style3": "acrylic-1143758",
+  "style4": "chris-barbalis",
+  "style5": "dt3108",
+  "style6": "wave",
+};
+const SAMPLE_IMAGES = {
+  "SAMPLE_IMAGE1": "TLPS-7103_small.jpg",
+  "SAMPLE_IMAGE2": "bird.jpg",
+  "SAMPLE_IMAGE3": "VOC2010_18.jpg",
+  "SAMPLE_IMAGE4": "rhino.jpg",
+  "SAMPLE_IMAGE5": "hong_ps.jpg",
+  "SAMPLE_IMAGE6": "boy.jpg"
+};
+const STYLE_IMAGES = {
+  "STYLE_IMAGE1": STYLE_TYPES.style1 + ".jpg",
+  "STYLE_IMAGE2": STYLE_TYPES.style2 + ".jpg",
+  "STYLE_IMAGE3": STYLE_TYPES.style3 + ".jpg",
+  "STYLE_IMAGE4": STYLE_TYPES.style4 + ".jpg",
+  "STYLE_IMAGE5": STYLE_TYPES.style5 + ".jpg",
+  "STYLE_IMAGE6": STYLE_TYPES.style6 + ".jpg"
+};
+const PLACEHOLD_IMAGE = "https://via.placeholder.com/378x270.png";
+
 export default {
   name: 'RegionBasedStyleTransfer',
   data () {
     return {
-      selectedFile: null,
-      originImage: "https://via.placeholder.com/378x270.png",
-      globalStyleTransferImage: "https://via.placeholder.com/378x270.png",
-      regionBasedStyleTransferImage: "https://via.placeholder.com/378x270.png",
+      selectedFile: undefined,
+      originImage: PLACEHOLD_IMAGE,
+      globalStyleTransferImage: PLACEHOLD_IMAGE,
+      regionBasedStyleTransferImage: PLACEHOLD_IMAGE,
       sampleImages: {
         "sample1": "https://via.placeholder.com/150",
         "sample2": "https://via.placeholder.com/150",
@@ -121,21 +147,13 @@ export default {
         "style5": "https://via.placeholder.com/150",
         "style6": "https://via.placeholder.com/150",
       },
-      styleTypes:{
-        "style1": "a11268",
-        "style2": "rain_princess",
-        "style3": "scream",
-        "style4": "wreck",
-        "style5": "udnie",
-        "style6": "wave",
-      },
-      demoImage: null,
-      currentStyle: "wreck",
+      demoImage: undefined,
+      currentStyle: undefined,
       host: "localhost",
       port: "5000",
       // host: "35.245.30.254",
       // port: "5000",
-      svgPath: null,
+      svgPath: undefined,
     }
   },
   methods: {
@@ -157,35 +175,20 @@ export default {
       })
     },
     updateSampleImage(){
-      var SAMPLE_IMAGE_NAME1 = "TLPS-7103_small.jpg";
-      var SAMPLE_IMAGE_NAME2 = "bird.jpg";
-      var SAMPLE_IMAGE_NAME3 = "VOC2010_18.jpg";
-      var SAMPLE_IMAGE_NAME4 = "rhino.jpg";
-      var SAMPLE_IMAGE_NAME5 = "hong_ps.jpg";
-      var SAMPLE_IMAGE_NAME6 = "boy.jpg";
-
-      this.sampleImages.sample1 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME1;
-      this.sampleImages.sample2 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME2;
-      this.sampleImages.sample3 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME3;
-      this.sampleImages.sample4 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME4;
-      this.sampleImages.sample5 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME5;
-      this.sampleImages.sample6 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGE_NAME6;
+      this.sampleImages.sample1 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGES.SAMPLE_IMAGE1;
+      this.sampleImages.sample2 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGES.SAMPLE_IMAGE2;
+      this.sampleImages.sample3 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGES.SAMPLE_IMAGE3;
+      this.sampleImages.sample4 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGES.SAMPLE_IMAGE4;
+      this.sampleImages.sample5 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGES.SAMPLE_IMAGE5;
+      this.sampleImages.sample6 = "http://" + this.host + ":" + this.port + "/get_sample_image/" + SAMPLE_IMAGES.SAMPLE_IMAGE6;
     },
-
     updateStyleImage(){
-      var STYLE_IMAGE_NAME1 = "la_muse.jpg";
-      var STYLE_IMAGE_NAME2 = "rain_princess.jpg";
-      var STYLE_IMAGE_NAME3 = "the_scream.jpg";
-      var STYLE_IMAGE_NAME4 = "the_shipwreck_of_the_minotaur.jpg";
-      var STYLE_IMAGE_NAME5 = "udnie.jpg";
-      var STYLE_IMAGE_NAME6 = "wave.jpg";
-
-      this.styleImages.style1 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME1;
-      this.styleImages.style2 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME2;
-      this.styleImages.style3 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME3;
-      this.styleImages.style4 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME4;
-      this.styleImages.style5 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME5;
-      this.styleImages.style6 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGE_NAME6;
+      this.styleImages.style1 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE1;
+      this.styleImages.style2 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE2;
+      this.styleImages.style3 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE3;
+      this.styleImages.style4 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE4;
+      this.styleImages.style5 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE5;
+      this.styleImages.style6 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE6;
     },
     
     onMounted(){
@@ -197,8 +200,8 @@ export default {
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
       this.demoImage = null;
-      this.globalStyleTransferImage = "https://via.placeholder.com/378x270.png";
-      this.regionBasedStyleTransferImage = "https://via.placeholder.com/378x270.png";
+      this.globalStyleTransferImage = PLACEHOLD_IMAGE;
+      this.regionBasedStyleTransferImage = PLACEHOLD_IMAGE;
 
       if(this.selectedFile.size > 1048576){
         this.alertModalShow("File is too large!", "Please make sure the size of image is smaller than 1MB");
@@ -239,7 +242,7 @@ export default {
       }
     },
 
-    onUpload(style_type="wreck"){
+    onUpload(style_type=STYLE_TYPES.style1){
       if(this.selectedFile){
         this.loadingModalShow();
         var formData = new FormData();
@@ -287,12 +290,12 @@ export default {
       this.demoImage = this.sampleImages[sample_id];
       this.originImage = this.sampleImages[sample_id];
       this.selectedFile = null;
-      this.globalStyleTransferImage = "https://via.placeholder.com/378x270.png";
-      this.regionBasedStyleTransferImage = "https://via.placeholder.com/378x270.png";
+      this.globalStyleTransferImage = PLACEHOLD_IMAGE;
+      this.regionBasedStyleTransferImage = PLACEHOLD_IMAGE;
     },
 
     applyStyle(stypeIdx){
-      this.currentStyle = this.styleTypes[stypeIdx];
+      this.currentStyle = STYLE_TYPES[stypeIdx];
       console.log("style_type: ", this.currentStyle);
       this.onUpload(this.currentStyle);
     },

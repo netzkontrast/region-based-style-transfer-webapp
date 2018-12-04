@@ -53,7 +53,7 @@ STYLE_MODEL_MAP = {
     
     "dt1541": STYLE_MODEL_PATH + "dt1541/",
     "a11268": STYLE_MODEL_PATH + "a11268/",
-    "acrylic": STYLE_MODEL_PATH + "acrylic/",
+    "acrylic-1143758": STYLE_MODEL_PATH + "acrylic-1143758/",
     "chris-barbalis": STYLE_MODEL_PATH + "chris-barbalis/",
     "dt3108": STYLE_MODEL_PATH + "dt3108/",
 }
@@ -202,10 +202,7 @@ def segmentation_image(detection_graph, label_names, image_path, segmentation_sa
 def style_transfer(style, in_path, out_path, device_t='/gpu:0', batch_size=1):
     print("log: Begin to style transfer")
 
-    print(STYLE_MODEL_MAP)
     style = STYLE_MODEL_MAP[style]
-    print(style, in_path, out_path)
-    print("##########################")
 
     img_shape = get_img(in_path).shape
     g = tf.Graph()
