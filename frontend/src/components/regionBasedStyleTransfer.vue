@@ -162,10 +162,10 @@ export default {
       },
       demoImage: undefined,
       currentStyle: undefined,
-      host: "localhost",
-      port: "5000",
-      // host: "35.245.30.254",
+      // host: "localhost",
       // port: "5000",
+      host: "35.245.30.254",
+      port: "5000",
       svgPath: undefined,
     }
   },
