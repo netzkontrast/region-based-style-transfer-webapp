@@ -29,13 +29,11 @@
           <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="originImage" @click="$refs.fileInput.click()" style="cursor:pointer"  alt="Card image cap">
-              <div class="card-body" style="height:42px">
-                <input id="input-image" style="display:none;" type="file" @change="onFileSelected" ref="fileInput" accept=".jpg, .jpeg">
-                <!--<button  class="btn btn-primary btn" style="float:left" @click="$refs.fileInput.click()">Upload</button>-->
-                
-                <h3 style="display:inline"><span class="badge badge-info">Origin</span></h3>
-
-                <!-- <button class="btn btn-primary btn" style="float:right" @click="onUpload()">Apply</button>-->
+              <input id="input-image" style="display:none;" type="file" @change="onFileSelected" ref="fileInput" accept=".jpg, .jpeg">
+              <div class="card-body" style="height:42px; position:relative;text-align:center;">
+                <div class="my-3">
+                  <h5 style="display:inline; bottom:0px;"><span class="badge badge-info">Origin</span></h5>
+                </div>
               </div>
             </div>
           </div>
@@ -43,8 +41,10 @@
           <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="globalStyleTransferImage" alt="Card image cap">
-              <div class="card-body" style="height:42px">
-                <h3><span class="badge badge-info">Global Style Transfer</span></h3>
+              <div class="card-body" style="height:42px; position:relative;text-align:center;">
+                <div class="my-3">
+                  <h5 style="display:inline; bottom:0px;"><span class="badge badge-info">Global Style Transfer</span></h5>
+                </div>
               </div>
             </div>
           </div>
@@ -52,8 +52,10 @@
           <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="regionBasedStyleTransferImage" alt="Card image cap">
-              <div class="card-body" style="height:42px">
-                <h3><span class="badge badge-info">Background Style Transfer</span></h3>
+              <div class="card-body" style="height:42px; position:relative;text-align:center;">
+                <div class="my-3">
+                  <h5 style="display:inline; bottom:0px;"><span class="badge badge-info">Background Style Transfer</span></h5>
+                </div>
               </div>
             </div>
           </div>
@@ -61,8 +63,10 @@
           <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="regionBasedStyleTransferWithColorImage" alt="Card image cap">
-              <div class="card-body" style="height:42px">
-                <h3><span class="badge badge-info">Background Style Transfer with Color</span></h3>
+              <div class="card-body" style="height:42px; position:relative;text-align:center;">
+                <div class="my-3">
+                  <h5 style="display:inline; bottom:0px;"><span class="badge badge-info">Background Style Transfer (color)</span></h5>
+                </div>
               </div>
             </div>
           </div>
@@ -301,6 +305,7 @@ export default {
       this.selectedFile = null;
       this.globalStyleTransferImage = PLACEHOLDER_IMAGE;
       this.regionBasedStyleTransferImage = PLACEHOLDER_IMAGE;
+      this.regionBasedStyleTransferWithColorImage = PLACEHOLDER_IMAGE;
     },
 
     applyStyle(stypeIdx){
