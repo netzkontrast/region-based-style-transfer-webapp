@@ -26,7 +26,7 @@
 
         <h4 class="mt-1"><span class="badge badge-primary">Result</span></h4>
         <div class="row">
-          <div class="col-sm-4 resultRow">
+          <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="originImage" @click="$refs.fileInput.click()" style="cursor:pointer"  alt="Card image cap">
               <div class="card-body" style="height:42px">
@@ -40,7 +40,7 @@
             </div>
           </div>
 
-          <div class="col-sm-4 resultRow">
+          <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="globalStyleTransferImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
@@ -49,11 +49,20 @@
             </div>
           </div>
 
-          <div class="col-sm-4 resultRow">
+          <div class="col-sm-3 resultRow">
             <div class="card">
               <img class="card-img-top showResult" :src="regionBasedStyleTransferImage" alt="Card image cap">
               <div class="card-body" style="height:42px">
                 <h3><span class="badge badge-info">Background Style Transfer</span></h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-3 resultRow">
+            <div class="card">
+              <img class="card-img-top showResult" :src="regionBasedStyleTransferWithColorImage" alt="Card image cap">
+              <div class="card-body" style="height:42px">
+                <h3><span class="badge badge-info">Background Style Transfer with Color</span></h3>
               </div>
             </div>
           </div>
@@ -94,7 +103,6 @@
 </template>
 
 <script>
-
 import axios from 'axios';
 
 const STYLE_TYPES = {
@@ -131,6 +139,7 @@ export default {
       originImage: PLACEHOLDER_IMAGE,
       globalStyleTransferImage: PLACEHOLDER_IMAGE,
       regionBasedStyleTransferImage: PLACEHOLDER_IMAGE,
+      regionBasedStyleTransferWithColorImage: PLACEHOLDER_IMAGE,
       sampleImages: {
         "sample1": "https://via.placeholder.com/150",
         "sample2": "https://via.placeholder.com/150",
@@ -280,6 +289,7 @@ export default {
 
       this.globalStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_global_style_transfer_image/" + filename + "_" + style_type + "." + suffix;
       this.regionBasedStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_image/" + "blend_" + filename + "_" + style_type + "." + suffix;
+      this.regionBasedStyleTransferWithColorImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_with_color_image/" + filename + "_" + style_type + "_color" + "." + suffix;
       this.originImage = "http://" + this.host + ":" + this.port + "/get_upload_image/" + image_name;
 
       this.loadingModalHide();
