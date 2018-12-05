@@ -110,11 +110,11 @@
 import axios from 'axios';
 
 const STYLE_TYPES = {
-  "style1": "a11268",
-  "style2": "dt1541",
-  "style3": "acrylic-1143758",
-  "style4": "chris-barbalis",
-  "style5": "dt3108",
+  "style1": "acrylic-1143758",
+  "style2": "chris-barbalis",
+  "style3": "dt3108",
+  "style4": "scream",
+  "style5": "udnie",
   "style6": "dt1966",
 };
 const SAMPLE_IMAGES = {
