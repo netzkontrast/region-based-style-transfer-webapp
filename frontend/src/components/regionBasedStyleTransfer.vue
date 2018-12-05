@@ -65,7 +65,7 @@
               <img class="card-img-top showResult" :src="regionBasedStyleTransferWithColorImage" alt="Card image cap">
               <div class="card-body" style="height:42px; position:relative;text-align:center;">
                 <div class="my-3">
-                  <h5 style="display:inline; bottom:0px;"><span class="badge badge-info">Background Style Transfer (color)</span></h5>
+                  <h5 style="display:inline; bottom:0px;"><span class="badge badge-info">Background Style Transfer (add color)</span></h5>
                 </div>
               </div>
             </div>
@@ -115,15 +115,15 @@ const STYLE_TYPES = {
   "style3": "acrylic-1143758",
   "style4": "chris-barbalis",
   "style5": "dt3108",
-  "style6": "wave",
+  "style6": "dt1966",
 };
 const SAMPLE_IMAGES = {
-  "SAMPLE_IMAGE1": "TLPS-7103_small.jpg",
-  "SAMPLE_IMAGE2": "bird.jpg",
+  "SAMPLE_IMAGE1": "girl1.jpg",
+  "SAMPLE_IMAGE2": "girl2.jpg",
   "SAMPLE_IMAGE3": "VOC2010_18.jpg",
-  "SAMPLE_IMAGE4": "rhino.jpg",
   "SAMPLE_IMAGE5": "hong_ps.jpg",
-  "SAMPLE_IMAGE6": "boy.jpg"
+  "SAMPLE_IMAGE4": "man2.jpg",
+  "SAMPLE_IMAGE6": "man1.jpg"
 };
 const STYLE_IMAGES = {
   "STYLE_IMAGE1": STYLE_TYPES.style1 + ".jpg",
@@ -293,7 +293,7 @@ export default {
 
       this.globalStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_global_style_transfer_image/" + filename + "_" + style_type + "." + suffix;
       this.regionBasedStyleTransferImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_image/" + "blend_" + filename + "_" + style_type + "." + suffix;
-      this.regionBasedStyleTransferWithColorImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_with_color_image/" + filename + "_" + style_type + "_color" + "." + suffix;
+      this.regionBasedStyleTransferWithColorImage = "http://" + this.host + ":" + this.port + "/get_region_based_style_transfer_with_color_image/" + "blend_" + filename + "_" + style_type + "_color" + "." + suffix;
       this.originImage = "http://" + this.host + ":" + this.port + "/get_upload_image/" + image_name;
 
       this.loadingModalHide();

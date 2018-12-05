@@ -56,8 +56,8 @@ STYLE_MODEL_MAP = {
     "acrylic-1143758": STYLE_MODEL_PATH + "acrylic-1143758/",
     "chris-barbalis": STYLE_MODEL_PATH + "chris-barbalis/",
     "dt3108": STYLE_MODEL_PATH + "dt3108/",
+    "dt1966": STYLE_MODEL_PATH + "dt1966/",
 }
-
 
 LABEL_NAMES = np.asarray([
     'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tv'
@@ -364,17 +364,28 @@ if __name__ == '__main__':
     SAMPLE_PATH = "./_sample_images/"
     GLOBAL_STYLE_TRANSFER_PATH = "./_global_style_transfer_images/"
     REGION_BASED_STYLE_TRANSFER_PATH = "./_region_based_style_transfer_images/"
+    REGION_BASED_STYLE_TRANSFER_WITH_COLOR_PATH = "_region_based_style_transfer_with_color_images/"
+
     SEGMENT_MASK_PATH = "./_segment_mask_images/"
     GLOBAL_COLOR_TRANSFER_PATH = "./_color_transfer/_global_color_transfer_images/"
     STYLE_DATA_PATH = "./_color_transfer/_style_data/"
     STYLE_IMAGE_PATH = "./_style_images/"
 
-    sample_images = ["girl1", "girl2", "girl3", "man1", "man2", "VOC2010_18"]
-    image_suffix_list = ["jpg", "jpg", "jpg", "jpg", "jpg", "jpg"]
-    styles = [STYLE_MODEL_MAP["la_muse"], STYLE_MODEL_MAP["rain_princess"],
-              STYLE_MODEL_MAP["scream"], STYLE_MODEL_MAP["wreck"],
-              STYLE_MODEL_MAP["udnie"], STYLE_MODEL_MAP["wave"]]
-    # styles = ["la_muse", "rain_princess", "scream", "wreck", "udnie", "wave"]
+    sample_images = ["girl1", "girl2", "girl3", "man1", "man2", "VOC2010_18", "hong_ps", "boy", "rhino"]
+    image_suffix_list = ["jpg" for _ in range(len(sample_images))]
+    styles = ["la_muse", 
+              "rain_princess",
+              "scream", 
+              "wreck",
+              "udnie", 
+              "wave",
+              "dt1541",
+              "a11268",
+              "acrylic-1143758",
+              "chris-barbalis",
+              "dt3108",
+              "dt1966",
+    ]
 
     for image_name, image_suffix in zip(sample_images, image_suffix_list):
         for style in styles:
@@ -385,6 +396,9 @@ if __name__ == '__main__':
 
             color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
 
-            blend_img = blend_images(fg_path="%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
+            background_style_blend_img = blend_images(fg_path="%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
 
-            cv2.imwrite("%s/blend_%s_%s.%s"%(REGION_BASED_STYLE_TRANSFER_PATH, image_name, style, image_suffix), blend_img)
+            background_style_blend_with_color_img = blend_images(fg_path="%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
+
+            cv2.imwrite("%s/blend_%s_%s.%s"%(REGION_BASED_STYLE_TRANSFER_PATH, image_name, style, image_suffix), background_style_blend_img)
+            cv2.imwrite("%s/blend_%s_%s_color.%s"%(REGION_BASED_STYLE_TRANSFER_WITH_COLOR_PATH, image_name, style, image_suffix), background_style_blend_with_color_img)
