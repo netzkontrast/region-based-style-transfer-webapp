@@ -274,8 +274,6 @@ def blend_images(fg_path, bg_path, mask):
     bg = cv2.imread(bg_path)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
     mask = cv2.GaussianBlur(mask, (11, 11), 0)
-    #for i in range(mask.shape[0]):
-    #   for j in range(mask.shape[1]):
     
     mask = np.stack((mask,) * 3, -1)
     out_image = bg
@@ -283,12 +281,6 @@ def blend_images(fg_path, bg_path, mask):
         for j in range(mask.shape[1]):
             for k in range(3):
                 out_image[i][j][k] = (bg[i][j][k] * (1 - mask[i][j][k])) + (fg[i][j][k] * (mask[i][j][k]))
-    #out_image = blend_image_pair(fg, binary_mask(fg), bg, binary_mask(bg))
-    
-    #cv2.imshow("fg", fg)
-    #cv2.imshow("bg", bg)
-    #cv2.imshow("mask", mask)
-    #cv2.imshow("out", out_image)
     return out_image
 
 def rgb_to_lab(v):
@@ -300,6 +292,7 @@ def rgb_to_lab(v):
     return lab
     
 def color_transfer(img_path, style_image_path, style_data_path, output_path):
+    print("log: Begin to color transfer")
     mStyle, nStyle = -1, -1
     style = None
     list_style = []

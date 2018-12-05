@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request, redirect, url_for, flash, send_file, 
 from flask import render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-from combine import load_frozenmodel, segmentation_image, blend_images, style_transfer
+from combine import load_frozenmodel, segmentation_image, blend_images, style_transfer, color_transfer
 import numpy as np
 import cv2
 
@@ -14,8 +14,10 @@ app.config.from_object(__name__)
 
 app.config['UPLOAD_PATH'] = './_upload_images/'
 app.config['REGION_BASED_STYLE_TRANSFER_PATH'] = './_region_based_style_transfer_images/'
+app.config['REGION_BASED_STYLE_TRANSFER_WITH_COLOR_PATH'] = './_region_based_style_transfer_with_color_images/'
 app.config['GLOBAL_STYLE_TRANSFER_PATH'] = './_global_style_transfer_images/'
 app.config['SAMPLE_PATH'] = './_sample_images/'
+app.config["COLOR_TRANSFER_PATH"] = "./_color_transfer/"
 app.config['STYLE_PATH'] = './_style_images/'
 app.config["STYLE_CPKT_PATH"] = "./models/style_models"
 app.config["SEGMENT_MASK_PATH"] = "./_segment_mask_images/"
@@ -30,20 +32,32 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def region_based_style_transfer(image_name, image_suffix, style, blend_img_path):
+def region_based_style_transfer(image_name, image_suffix, style):
     fg_img_path = os.path.join(app.config['UPLOAD_PATH'], image_name+'.'+image_suffix)
     bg_img_path = os.path.join(app.config['GLOBAL_STYLE_TRANSFER_PATH'], image_name+'_'+style+'.'+image_suffix)
+    style_img_path = os.path.join(app.config['STYLE_PATH'], style+'.'+image_suffix)
+    style_data_path = os.path.join(app.config['COLOR_TRANSFER_PATH'], "_style_data/" + style+'.txt')
+    color_img_path = os.path.join(app.config['COLOR_TRANSFER_PATH'], "_global_color_transfer_images/" + image_name+"_" +style+"."+image_suffix)
+    background_style_transfer_img_path =  os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_PATH'],  "blend_"+image_name+"_" +style+"."+image_suffix)
+    background_style_transfer_with_color_img_path =  os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_WITH_COLOR_PATH'],  image_name+"_" +style+"_color."+image_suffix)
 
     graph = load_frozenmodel()
     bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path, segmentation_save_path="%s/%s.jpg"%(app.config["SEGMENT_MASK_PATH"], image_name))
 
     style_transfer(style, fg_img_path, bg_img_path)
     
-    color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
 
-    blend_img = blend_images(fg_path=fg_img_path, bg_path=bg_img_path, mask=bin_mask)
+    print(color_img_path)
+    color_transfer(fg_img_path, style_img_path, style_data_path, color_img_path)
 
-    cv2.imwrite(blend_img_path, blend_img)
+    background_style_blend_img = blend_images(fg_path=fg_img_path, bg_path=bg_img_path, mask=bin_mask)
+
+    background_style_blend_with_color_img = blend_images(fg_path=fg_img_path, bg_path=color_img_path, mask=bin_mask)
+
+
+
+    cv2.imwrite(background_style_transfer_img_path, background_style_blend_img)
+    cv2.imwrite(background_style_transfer_with_color_img_path, background_style_blend_with_color_img)
 
     return True
 
@@ -86,7 +100,7 @@ def upload_file(style_cpkt):
             blend_img_path = os.path.join(app.config['REGION_BASED_STYLE_TRANSFER_PATH'], blend_img_name)
 
             if(not (os.path.isfile(blend_img_path))):
-                region_based_style_transfer(img_path, img_suffix, style, blend_img_path)
+                region_based_style_transfer(img_path, img_suffix, style)
 
             return redirect(url_for('region_based_style_transfer_image', image_name=blend_img_name))
     return '''
