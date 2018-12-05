@@ -185,12 +185,9 @@ def segmentation_image(detection_graph, label_names, image_path, segmentation_sa
             image = cv2.resize(image, target_size)
             batch_seg_map = sess.run('SemanticPredictions:0', feed_dict={'ImageTensor:0': [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]})
             seg_map = batch_seg_map[0]
-            #vis_segmentation(image, seg_map, segmentation_save_path)
             seg_image = create_colormap(seg_map).astype(np.uint8)
 
             cv2.addWeighted(seg_image,ALPHA,image,1-ALPHA,0,image)
-            #cv2.imshow('segmentation',image)
-            #k = cv2.waitKey(0)
             bin_mask = cal_bin_mask(seg_map)
             bin_mask = bin_mask / 255
             bin_mask = cv2.resize(bin_mask, (height, width))
@@ -381,7 +378,10 @@ if __name__ == '__main__':
 
     sample_images = ["girl1", "girl2", "girl3", "man1", "man2", "VOC2010_18"]
     image_suffix_list = ["jpg", "jpg", "jpg", "jpg", "jpg", "jpg"]
-    styles = ["la_muse", "rain_princess", "scream", "wreck", "udnie", "wave"]
+    styles = [STYLE_MODEL_MAP["la_muse"], STYLE_MODEL_MAP["rain_princess"],
+              STYLE_MODEL_MAP["scream"], STYLE_MODEL_MAP["wreck"],
+              STYLE_MODEL_MAP["udnie"], STYLE_MODEL_MAP["wave"]]
+    # styles = ["la_muse", "rain_princess", "scream", "wreck", "udnie", "wave"]
 
     for image_name, image_suffix in zip(sample_images, image_suffix_list):
         for style in styles:
@@ -391,6 +391,7 @@ if __name__ == '__main__':
             style_transfer(style, "%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix))
 
             color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
+
             blend_img = blend_images(fg_path="%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix), bg_path="%s/%s_%s.%s"%(GLOBAL_STYLE_TRANSFER_PATH, image_name, style, image_suffix), mask=bin_mask)
 
             cv2.imwrite("%s/blend_%s_%s.%s"%(REGION_BASED_STYLE_TRANSFER_PATH, image_name, style, image_suffix), blend_img)

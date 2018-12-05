@@ -121,16 +121,16 @@ const STYLE_IMAGES = {
   "STYLE_IMAGE5": STYLE_TYPES.style5 + ".jpg",
   "STYLE_IMAGE6": STYLE_TYPES.style6 + ".jpg"
 };
-const PLACEHOLD_IMAGE = "https://via.placeholder.com/378x270.png";
+const PLACEHOLDER_IMAGE = "https://via.placeholder.com/378x270.png";
 
 export default {
   name: 'RegionBasedStyleTransfer',
   data () {
     return {
       selectedFile: undefined,
-      originImage: PLACEHOLD_IMAGE,
-      globalStyleTransferImage: PLACEHOLD_IMAGE,
-      regionBasedStyleTransferImage: PLACEHOLD_IMAGE,
+      originImage: PLACEHOLDER_IMAGE,
+      globalStyleTransferImage: PLACEHOLDER_IMAGE,
+      regionBasedStyleTransferImage: PLACEHOLDER_IMAGE,
       sampleImages: {
         "sample1": "https://via.placeholder.com/150",
         "sample2": "https://via.placeholder.com/150",
@@ -190,7 +190,6 @@ export default {
       this.styleImages.style5 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE5;
       this.styleImages.style6 = "http://" + this.host + ":" + this.port + "/get_style_image/" + STYLE_IMAGES.STYLE_IMAGE6;
     },
-    
     onMounted(){
       this.svgPath = "./static/Spinner-1s-200px.svg";
       this.updateSampleImage();
@@ -200,8 +199,8 @@ export default {
     onFileSelected(event){
       this.selectedFile = event.target.files[0];
       this.demoImage = null;
-      this.globalStyleTransferImage = PLACEHOLD_IMAGE;
-      this.regionBasedStyleTransferImage = PLACEHOLD_IMAGE;
+      this.globalStyleTransferImage = PLACEHOLDER_IMAGE;
+      this.regionBasedStyleTransferImage = PLACEHOLDER_IMAGE;
 
       if(this.selectedFile.size > 1048576){
         this.alertModalShow("File is too large!", "Please make sure the size of image is smaller than 1MB");
@@ -290,8 +289,8 @@ export default {
       this.demoImage = this.sampleImages[sample_id];
       this.originImage = this.sampleImages[sample_id];
       this.selectedFile = null;
-      this.globalStyleTransferImage = PLACEHOLD_IMAGE;
-      this.regionBasedStyleTransferImage = PLACEHOLD_IMAGE;
+      this.globalStyleTransferImage = PLACEHOLDER_IMAGE;
+      this.regionBasedStyleTransferImage = PLACEHOLDER_IMAGE;
     },
 
     applyStyle(stypeIdx){

@@ -39,6 +39,8 @@ def region_based_style_transfer(image_name, image_suffix, style, blend_img_path)
 
     style_transfer(style, fg_img_path, bg_img_path)
     
+    color_transfer("%s/%s.%s"%(SAMPLE_PATH, image_name, image_suffix), "%s/%s.jpg"%(STYLE_IMAGE_PATH, style), "%s/%s.txt"%(STYLE_DATA_PATH, style), "%s/%s_%s.%s"%(GLOBAL_COLOR_TRANSFER_PATH, image_name, style, image_suffix))
+
     blend_img = blend_images(fg_path=fg_img_path, bg_path=bg_img_path, mask=bin_mask)
 
     cv2.imwrite(blend_img_path, blend_img)
