@@ -211,7 +211,7 @@ export default {
 
     onFileSelected(event){
       // Force no file could be uploaded. Just in case my server get crashed by anomouny attack.
-      return
+      //return
       this.selectedFile = event.target.files[0];
       this.demoImage = null;
       this.globalStyleTransferImage = PLACEHOLDER_IMAGE;
