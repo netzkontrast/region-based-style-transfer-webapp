@@ -134,13 +134,14 @@ const STYLE_IMAGES = {
   "STYLE_IMAGE6": STYLE_TYPES.style6 + ".jpg"
 };
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/378x270.png";
+const UPLOAD_PLACEHOLDER_IMAEG = "https://placehold.it/100/000000/ffffff?text=UPLOAD";
 
 export default {
   name: 'RegionBasedStyleTransfer',
   data () {
     return {
       selectedFile: undefined,
-      originImage: PLACEHOLDER_IMAGE,
+      originImage: UPLOAD_PLACEHOLDER_IMAEG,
       globalStyleTransferImage: PLACEHOLDER_IMAGE,
       regionBasedStyleTransferImage: PLACEHOLDER_IMAGE,
       regionBasedStyleTransferWithColorImage: PLACEHOLDER_IMAGE,
