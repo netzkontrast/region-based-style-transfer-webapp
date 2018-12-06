@@ -250,7 +250,6 @@ def color_transfer(img_path, style_image_path, style_data_path, output_path):
         for i, j, _ in list_style:
             fout.write("%d\t%d\t%d\t%d\t%d\n" % (i, j, style[i, j, 0], style[i, j, 1], style[i, j, 2]))
         fout.close()
-        
 
     img = cv2.imread(img_path)
     mImg, nImg = img.shape[0], img.shape[1]
