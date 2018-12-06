@@ -7,25 +7,18 @@ import tarfile
 from six.moves import urllib
 import numpy as np
 import tensorflow as tf
-import yaml
 import cv2
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import gridspec
 from matplotlib import pyplot as plt
-from helper import FPS2, WebcamVideoStream
 from skimage import measure
 from PIL import Image
 import transform
 import scipy
-import scipy.misc
+from scipy.ndimage.morphology import distance_transform_edt as euc_dist
 import tensorflow as tf
-from utils import save_img, get_img, exists, list_files
-from argparse import ArgumentParser
-from collections import defaultdict
-import time
-from moviepy.video.io.VideoFileClip import VideoFileClip
-import moviepy.video.io.ffmpeg_writer as ffmpeg_writer
+from utils import save_img, get_img
 
 # Global Parameters
 ALPHA = 0.3
@@ -51,21 +44,20 @@ STYLE_MODEL_MAP = {
 #%---------------------- Semantic Segmentation Start ----------------------%
 def load_frozenmodel():
     print('Log: Loading frozen model into memory')
-    detection_graph = tf.Graph()
-    with detection_graph.as_default():
+    model_graph = tf.Graph()
+    with model_graph.as_default():
         seg_graph_def = tf.GraphDef()
-        with tf.gfile.GFile(MODEL_PATH, 'rb') as fid:
-            serialized_graph = fid.read()
-            seg_graph_def.ParseFromString(serialized_graph)
+        with tf.gfile.GFile(MODEL_PATH, 'rb') as f:
+            seg_graph_def.ParseFromString(f.read())
             tf.import_graph_def(seg_graph_def, name='')
-    return detection_graph
+    return model_graph
 
-def create_colormap(seg_map):
-    colormap = np.zeros((256, 3), dtype=int)
+def create_color_map(seg_map):
+    color_map = np.zeros((256, 3), dtype=int)
     ind = np.arange(256, dtype=int)
     for shift in reversed(list(range(8))):
         for channel in range(3):
-            colormap[:, channel] |= ((ind >> channel) & 1) << shift
+            color_map[:, channel] |= ((ind >> channel) & 1) << shift
         ind >>= 3
 
     m, n = seg_map.shape
@@ -74,18 +66,17 @@ def create_colormap(seg_map):
             # 15 is the index of people.
             if(seg_map[i][j] != 15):
                 seg_map[i][j] = 0
-    return colormap[seg_map]
+    return color_map[seg_map]
 
-def vis_segmentation(image, seg_map, segmentation_save_path):
-
+def visualize_segmentation(image, seg_map, segmentation_save_path):
     def create_PASCAL_colormap(seg_map):
-        colormap = np.zeros((256, 3), dtype=int)
+        color_map = np.zeros((256, 3), dtype=int)
         ind = np.arange(256, dtype=int)
         for shift in reversed(list(range(8))):
             for channel in range(3):
-                colormap[:, channel] |= ((ind >> channel) & 1) << shift
+                color_map[:, channel] |= ((ind >> channel) & 1) << shift
             ind >>= 3
-        return colormap[seg_map]
+        return color_map[seg_map]
 
     label_map = np.arange(21).reshape(21, 1)
     color_map = create_PASCAL_colormap(label_map)
@@ -99,7 +90,7 @@ def vis_segmentation(image, seg_map, segmentation_save_path):
     plt.title('Detect image')
 
     plt.subplot(grid_spec[1])
-    seg_image = create_colormap(seg_map).astype(np.uint8)
+    seg_image = create_color_map(seg_map).astype(np.uint8)
     plt.imshow(seg_image)
     plt.axis('off')
     plt.title('segmentation map')
@@ -134,21 +125,21 @@ def cal_bin_mask(seg_map):
                 seg_map[i][j] = 255
     return seg_map
 
-def segmentation_image(detection_graph, image_path, segmentation_save_path):
+def segmentation_image(seg_graph, image_path, segmentation_save_path):
     print("Log: Begin - image segmentation")
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth=True
-    with detection_graph.as_default():
-        with tf.Session(graph=detection_graph) as sess:
+    with seg_graph.as_default():
+        with tf.Session(graph=seg_graph) as sess:
             image = cv2.imread(image_path)
             ori_image = image
             width, height, _ = image.shape
             resize_ratio = 1.0 * 513/ max(width, height)
             target_size = (int(resize_ratio * image.shape[1]), int(resize_ratio * image.shape[0]))
             image = cv2.resize(image, target_size)
-            batch_seg_map = sess.run('SemanticPredictions:0', feed_dict={'ImageTensor:0': [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]})
-            seg_map = batch_seg_map[0]
-            seg_image = create_colormap(seg_map).astype(np.uint8)
+            seg_map_arr = sess.run('SemanticPredictions:0', feed_dict={'ImageTensor:0': [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]})
+            seg_map = seg_map_arr[0]
+            seg_image = create_color_map(seg_map).astype(np.uint8)
 
             cv2.addWeighted(seg_image,ALPHA,image,1-ALPHA,0,image)
             bin_mask = cal_bin_mask(seg_map)
@@ -156,7 +147,7 @@ def segmentation_image(detection_graph, image_path, segmentation_save_path):
             bin_mask = cv2.resize(bin_mask, (height, width))
             u = min(height, width) // 30
             img_edges, bin_mask = optimize_boundary(ori_image, bin_mask, u)
-            vis_segmentation(ori_image, (bin_mask*15).astype(np.int32), segmentation_save_path)
+            visualize_segmentation(ori_image, (bin_mask*15).astype(np.int32), segmentation_save_path)
 
     print("Log: End - image segmentation - Success√")
     return bin_mask
@@ -191,29 +182,27 @@ def optimize_boundary(img, mask, depth):
 #%---------------------- Style Transfer Start ----------------------%
 def style_transfer(style, in_path, out_path, device_t='/gpu:0', batch_size=1):
     print("Log: Begin - style transfer")
+    curr_style = STYLE_MODEL_MAP[style]
 
-    style = STYLE_MODEL_MAP[style]
     img_shape = get_img(in_path).shape
-    g = tf.Graph()
-    curr_num = 0
+    graph = tf.Graph()
     soft_config = tf.ConfigProto(allow_soft_placement=True)
     soft_config.gpu_options.allow_growth = True
-    with g.as_default(), g.device(device_t), tf.Session(config=soft_config) as sess:
-        batch_shape = (1,) + img_shape
-        img_placeholder = tf.placeholder(tf.float32, shape=batch_shape, name='img_placeholder')
-        preds = transform.net(img_placeholder)
+    with graph.as_default(), graph.device(device_t), tf.Session(config=soft_config) as sess:
+        img_val = tf.placeholder(tf.float32, shape=(1,) + img_shape, name='img_val')
+        preds = transform.net(img_val)
         saver = tf.train.Saver()
-        if os.path.isdir(style):
-            ckpt = tf.train.get_checkpoint_state(style)
+        if os.path.isdir(curr_style):
+            ckpt = tf.train.get_checkpoint_state(curr_style)
             if ckpt and ckpt.model_checkpoint_path:
                 saver.restore(sess, ckpt.model_checkpoint_path)
             else:
                 raise Exception("No checkpoint found...")
         else:
-            saver.restore(sess, style)
+            saver.restore(sess, curr_style)
 
         img = get_img(in_path)
-        _preds = sess.run(preds, feed_dict={img_placeholder:[img]})
+        _preds = sess.run(preds, feed_dict={img_val:[img]})
         save_img(out_path, _preds[0])
     print("Log: End - style transfer - Success√")
     return _preds[0]
@@ -301,7 +290,6 @@ def color_transfer(img_path, style_image_path, style_data_path, output_path):
 
 #%---------------------- Blending Images Start ----------------------%
 # Blending algo.
-from scipy.ndimage.morphology import distance_transform_edt as euc_dist
 def blend_image_pair(src_img, src_mask, dst_img, dst_mask):
     m, n = src_img.shape[0], src_img.shape[1]
     left_src, left_dst, right_src, right_dst = n, n, 0, 0
