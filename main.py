@@ -23,10 +23,6 @@ STYLE_PATH = './_style_images/'
 STYLE_CPKT_PATH = "./models/style_models"
 SEGMENT_MASK_PATH = "./_segment_mask_images/"
 
-
-LABEL_NAMES = np.asarray([
-    'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tv'
-])
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 def allowed_file(filename):
@@ -42,12 +38,9 @@ def region_based_style_transfer(image_name, image_suffix, style):
     background_style_transfer_with_color_img_path =  os.path.join(REGION_BASED_STYLE_TRANSFER_WITH_COLOR_PATH,  "blend_"+image_name+"_" +style+"_color."+image_suffix)
 
     graph = load_frozenmodel()
-    bin_mask = segmentation_image(graph, LABEL_NAMES, image_path=fg_img_path, segmentation_save_path="%s/%s.jpg"%(SEGMENT_MASK_PATH, image_name))
+    bin_mask = segmentation_image(graph, image_path=fg_img_path, segmentation_save_path="%s/%s.jpg"%(SEGMENT_MASK_PATH, image_name))
 
     style_transfer(style, fg_img_path, bg_img_path)
-    
-
-    print(color_img_path)
     color_transfer(fg_img_path, style_img_path, style_data_path, color_img_path)
 
     background_style_blend_img = blend_images(fg_path=fg_img_path, bg_path=bg_img_path, mask=bin_mask)

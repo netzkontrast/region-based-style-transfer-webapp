@@ -211,12 +211,11 @@ export default {
     },
 
     onFileSelected(event){
-      // Force no file could be uploaded. Just in case my server get crashed by anomouny attack.
-      //return
       this.selectedFile = event.target.files[0];
       this.demoImage = null;
       this.globalStyleTransferImage = PLACEHOLDER_IMAGE;
       this.regionBasedStyleTransferImage = PLACEHOLDER_IMAGE;
+      this.regionBasedStyleTransferWithColorImage = PLACEHOLDER_IMAGE;
 
       if(this.selectedFile.size > 1048576){
         this.alertModalShow("File is too large!", "Please make sure the size of image is smaller than 1MB");

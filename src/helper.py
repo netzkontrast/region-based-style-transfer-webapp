@@ -80,7 +80,7 @@ class FPS2:
         self._glob_numFrames += 1
         self._local_numFrames += 1
         if self.curr_local_elapsed > self._interval:
-          print(("> FPS: {}".format(self.fps_local())))
+          print(("Log FPS: {}".format(self.fps_local())))
           self._local_numFrames = 0
           self._local_start = curr_time
 
@@ -115,7 +115,7 @@ class WebcamVideoStream:
         #Debug stream shape
         self.real_width = int(self.stream.get(3))
         self.real_height = int(self.stream.get(4))
-        print(("> Start video stream with shape: {},{}".format(self.real_width,self.real_height)))
+        print(("Log: Start video stream with shape: {},{}".format(self.real_width,self.real_height)))
     
     def start(self):
         # start the thread to read frames from the video stream
@@ -150,7 +150,7 @@ class WebcamVideoStream:
         try:
             self.frame = cv2.resize(self.frame, (self.width, self.height)) 
         except:
-            print("> Error resizing video stream")
+            print("Error: resizing video stream")
         
 
 
