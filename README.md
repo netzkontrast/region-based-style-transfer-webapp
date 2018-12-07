@@ -1,5 +1,5 @@
 
-## Main Algorithms.
+## Main Algorithms:
 
 - Semantic Segmantation
 - Style Transfer
