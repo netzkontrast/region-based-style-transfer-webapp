@@ -28,23 +28,35 @@ NOTE:
 Live demo: http://35.245.64.0:8080/#/ (please check it out before Dec 15th, 2018)
 
 <hr>
+<hr>
+<hr>
 
+</br>
 
 ## 1. Problem Definition and Motivation
 ![1](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/1.png)
 
 ## 2. System Architecture
+![2](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/2.png)
 
 
 ## 3. Methods
+![3](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.png)
 
 ### 3.1. Semantic Segmentation
+![3.1.](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.1.png)
 
 ### 3.2. Style Transfer
+![3.2.](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.2.png) 
 
 ### 3.3. Color Transfer
+![3.3](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.3.png)
 
 ### 3.4. Blending
+![3.4.](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.4.png)
 
 ## Experiment
+![4.1](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/4.1.png)
+![4.2](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/4.2.png)
+![4.3](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/4.3.png)
 
