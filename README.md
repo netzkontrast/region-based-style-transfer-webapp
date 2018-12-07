@@ -8,7 +8,7 @@
 
 ## Usage:
 
-Clone this repo:
+Clone this repo (be patient, this repository is about 4-5GB using git-lfs to store large checkpoint files):
 
 ```
    git clone git@github.com:zhichengMLE/region-based-style-transfer-webapp.git
