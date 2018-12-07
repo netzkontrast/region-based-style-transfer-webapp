@@ -17,7 +17,8 @@ Clone this repo (be patient, this repository is about 4-5GB using git-lfs to sto
 Frontend: 
 ```
    cd ./region-based-style-transfer-webapp/frontend/
-   HOST='0.0.0.0' PORT=8080 npm start
+   HOST='0.0.0.0' PORT=8080 npm start // if you want to run it in GCP and make it public.
+   npm run dev //if you want to run it in local machine.
 ```
 
 Backend:
