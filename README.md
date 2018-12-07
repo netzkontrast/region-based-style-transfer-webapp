@@ -47,8 +47,6 @@ Live demo: http://35.245.64.0:8080/#/ (please check it out before Dec 15th, 2018
 
 
 ## 3. Methods
-![3](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.png)
-
 ### 3.1. Semantic Segmentation
 ![3.1.](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/3.1.png)
 
