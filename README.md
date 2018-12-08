@@ -14,7 +14,7 @@ Clone this repo (be patient, this repository is about 4-5GB using git-lfs to sto
    git clone git@github.com:zhichengMLE/region-based-style-transfer-webapp.git
 ```
 
-install dependencies (use the one match the python version that you are using, I had only tested on Python3.)
+Install dependencies (use the one match the python version that you are using, I had only tested on Python3.)
 
 ```
    sudo pip install -r requirements.txt
