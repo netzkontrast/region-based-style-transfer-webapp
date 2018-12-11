@@ -48,7 +48,7 @@ NOTE:
 > If you have trouble to reproduce the result, please contact me via zd2212@columbia.edu
 
 
-**Live demo: http://35.245.64.0:8080/ (Please check it out before Dec 20, 2018. If you had trouble to access it, probably because we are out of credit. In this case, you could follow the usage session to reproduce the result locally. If you have trouble to reproduce the result, please contact me via zd2212@columbia.edu)**
+**Live demo: http://35.245.64.0:8080/ (Please check it out before Dec 20, 2018. If you had trouble to access it, probably because we are out of credit. In this case, you could follow the usage session to reproduce the result locally. If you need any assistant, please contact me via zd2212@columbia.edu)**
 
 
 Website Screenshot:
