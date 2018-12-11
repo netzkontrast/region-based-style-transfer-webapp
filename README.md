@@ -1,7 +1,7 @@
 
 ## Main Algorithms:
 
-- Semantic Segmantation
+- Semantic Segmantation (including boundary optimization)
 - Style Transfer
 - Color Transfer
 - Image blending (feathering)
@@ -17,15 +17,22 @@ Clone this repo (be patient, this repository is about 4-5GB using git-lfs to sto
 Install dependencies (use the one match the python version that you are using, I had only tested on Python3.)
 
 ```
+   # python 2
    sudo pip install -r requirements.txt
+   
+   # python 3
    sudo pip3 install -r requirements.txt
 ```
 
 Frontend: 
 ```
    cd ./region-based-style-transfer-webapp/frontend/
-   HOST='0.0.0.0' PORT=8080 npm start // if you want to run it in GCP and make it public.
-   npm run dev //if you want to run it in local machine.
+   
+   # if you want to run it in GCP and make it public.
+   HOST='0.0.0.0' PORT=8080 npm start
+   
+   # if you want to run it in local machine.
+   npm run dev
 ```
 
 Backend:
@@ -49,11 +56,14 @@ Website Screenshot:
 ![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website.jpeg)
 
 ![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website2.png)
+
 <hr>
 <hr>
 <hr>
 
 </br>
+
+> All the report could be found in folder: /report/
 
 ## 1. Problem Definition and Motivation
 ![1](https://raw.githubusercontent.com/zhichengMLE/region-based-style-transfer-webapp/master/report/images/1.png)
