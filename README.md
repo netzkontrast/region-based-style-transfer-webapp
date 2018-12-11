@@ -39,8 +39,12 @@ NOTE:
 > You need to change the url of frontend to receive from backend. (public url of GCP)
 
 
-Live demo: http://35.245.64.0:8080/ (please check it out before Dec 15th, 2018)
+**Live demo: http://35.245.64.0:8080/ (please check it out before Dec 15th, 2018)**
 
+
+Website Screenshot:
+
+![0](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website.jpeg)
 <hr>
 <hr>
 <hr>
