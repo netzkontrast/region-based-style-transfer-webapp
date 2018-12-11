@@ -165,7 +165,7 @@ export default {
       currentStyle: undefined,
       host: "localhost",
       port: "5000",
-      //host: "35.245.30.254",
+      //host: "35.245.64.0",
       //port: "5000",
       svgPath: undefined,
     }
