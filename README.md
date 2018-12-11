@@ -37,6 +37,8 @@ Backend:
 NOTE:
 
 > You need to change the url of frontend to receive from backend. (public url of GCP)
+> 
+> If you have trouble to reproduce the result, please contact me via zd2212@columbia.edu
 
 
 **Live demo: http://35.245.64.0:8080/ (please check it out before Dec 15th, 2018)**
@@ -44,7 +46,9 @@ NOTE:
 
 Website Screenshot:
 
-![0](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website.jpeg)
+![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website.jpeg)
+
+![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website2.png)
 <hr>
 <hr>
 <hr>
