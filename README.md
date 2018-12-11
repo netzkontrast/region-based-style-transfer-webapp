@@ -53,7 +53,7 @@ NOTE:
 
 Website Screenshot:
 
-![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website.jpeg)
+![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website.png)
 
 ![Website](https://github.com/zhichengMLE/region-based-style-transfer-webapp/blob/master/report/images/website2.png)
 
